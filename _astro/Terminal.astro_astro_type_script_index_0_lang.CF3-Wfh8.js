@@ -1,0 +1,1 @@
+import{c as m}from"./terminal-engine.B5YeJ2Py.js";const o=document.getElementById("terminal-output"),n=document.getElementById("terminal-input"),c=document.getElementById("terminal-prompt"),u=m({outputEl:o,inputEl:n,promptEl:c});document.querySelectorAll(".quick-cmd").forEach(t=>{t.addEventListener("click",()=>{const e=t.dataset.cmd;e&&(u.runCommand(e),n.focus())})});

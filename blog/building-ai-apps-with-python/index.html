@@ -1,0 +1,256 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"><!-- Primary Meta --><meta name="description" content="How we architect AI-powered SaaS applications using Python for ML pipelines and Go for high-performance microservices."><meta name="author" content="Ruban S"><meta name="keywords" content="ai"><!-- Open Graph --><meta property="og:type" content="article"><meta property="og:url" content="https://ruban.dev/blog/building-ai-apps-with-python/"><meta property="og:title" content="Building AI Applications with Python and Go Microservices | Ruban S"><meta property="og:description" content="How we architect AI-powered SaaS applications using Python for ML pipelines and Go for high-performance microservices."><meta property="og:image" content="https://ruban.dev/favicon.svg"><meta property="og:site_name" content="Ruban S Portfolio"><meta property="article:published_time" content="2026-03-28T00:00:00.000Z"><meta property="article:author" content="Ruban S"><meta property="article:tag" content="ai"><!-- Twitter --><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Building AI Applications with Python and Go Microservices | Ruban S"><meta name="twitter:description" content="How we architect AI-powered SaaS applications using Python for ML pipelines and Go for high-performance microservices."><meta name="twitter:image" content="https://ruban.dev/favicon.svg"><!-- Canonical --><link rel="canonical" href="https://ruban.dev/blog/building-ai-apps-with-python/"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN"><meta http-equiv="X-Content-Type-Options" content="nosniff"><meta name="referrer" content="strict-origin-when-cross-origin"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;"><title>Building AI Applications with Python and Go Microservices | Ruban S</title><script>
+      const saved = localStorage.getItem('theme');
+      if (saved && saved !== 'green') document.documentElement.setAttribute('data-theme', saved);
+    </script><link rel="stylesheet" href="/_astro/_astro_content.DfLi3KDt.css"></head> <body class="bg-term-bg text-term-text font-mono text-sm leading-relaxed min-h-screen overflow-x-hidden">  <div class="max-w-[880px] mx-auto px-5 py-5"> <div class="bg-term-bg border border-term-border rounded-lg px-8 py-10 max-sm:px-4 max-sm:py-6"> <a href="/blog" class="text-xs text-term-text-dim hover:text-term-green transition-colors mb-6 inline-block">← back to blog</a> <div class="mb-2 flex items-center gap-3"> <span class="text-xs text-term-text-dim tabular-nums">2026-03-28</span> <span class="text-[10px] text-term-text-dim uppercase tracking-widest px-2 py-0.5 rounded bg-term-green/5 border border-term-border">ai</span> </div> <h1 class="text-2xl font-bold text-white mb-8">Building AI Applications with Python and Go Microservices</h1> <article class="blog-content prose prose-invert prose-sm max-w-none
+        [&_p]:text-term-text [&_p]:text-[13px] [&_p]:leading-[1.85] [&_p]:mb-4
+        [&_h2]:text-white [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-3
+        [&_h3]:text-white [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-2
+        [&_ul]:space-y-1.5 [&_li]:text-term-text [&_li]:text-[13px] [&_li]:leading-[1.85]
+        [&_ol]:space-y-1.5 [&_ol_li]:text-term-text [&_ol_li]:text-[13px]
+        [&_code]:text-term-green [&_code]:text-xs [&_code]:bg-term-card [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded
+        [&_pre]:relative [&_pre]:bg-term-card [&_pre]:border [&_pre]:border-term-border [&_pre]:rounded-md [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4
+        [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-term-text
+        [&_a]:text-term-green [&_a]:no-underline [&_a]:hover:opacity-80
+        [&_strong]:text-white
+        [&_blockquote]:border-l-2 [&_blockquote]:border-term-green-dark [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-term-text-dim
+        [&_hr]:border-term-border [&_hr]:my-8
+        [&_table]:w-full [&_th]:text-left [&_th]:text-term-green-dim [&_th]:text-xs [&_th]:pb-2 [&_th]:border-b [&_th]:border-term-border [&_td]:text-[13px] [&_td]:py-2 [&_td]:border-b [&_td]:border-term-border/50
+      "> <p>At W3cert, we’re building AI-powered SaaS applications. Our stack splits the workload: Python handles the AI/ML logic, and Go handles the high-throughput microservices. Here’s how we architect it and the lessons we’ve learned.</p>
+<h2 id="why-two-languages">Why Two Languages?</h2>
+<p>Python is unbeatable for AI/ML — the ecosystem (LangChain, Hugging Face, scikit-learn, pandas) is massive. But Python is slow for concurrent HTTP services. Go gives us the performance we need for APIs that handle thousands of requests per second.</p>
+<p>The split is clean:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Concern</th><th>Language</th><th>Why</th></tr></thead><tbody><tr><td>LLM integration</td><td>Python</td><td>LangChain, OpenAI SDK</td></tr><tr><td>RAG pipelines</td><td>Python</td><td>Vector DBs, embeddings</td></tr><tr><td>Data processing</td><td>Python</td><td>pandas, numpy</td></tr><tr><td>API gateway</td><td>Go</td><td>Performance, concurrency</td></tr><tr><td>Real-time services</td><td>Go</td><td>goroutines, low latency</td></tr><tr><td>Background jobs</td><td>Go</td><td>Worker pools, scheduling</td></tr></tbody></table>
+<h2 id="rag-pipeline-architecture">RAG Pipeline Architecture</h2>
+<p>Our Retrieval-Augmented Generation pipeline processes documents and answers questions using company data:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> langchain.text_splitter </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> RecursiveCharacterTextSplitter</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> langchain_openai </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> OpenAIEmbeddings</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> langchain_community.vectorstores </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> Chroma</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> DocumentProcessor</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">    def</span><span style="color:#79B8FF"> __init__</span><span style="color:#E1E4E8">(self):</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.splitter </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> RecursiveCharacterTextSplitter(</span></span>
+<span class="line"><span style="color:#FFAB70">            chunk_size</span><span style="color:#F97583">=</span><span style="color:#79B8FF">1000</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">            chunk_overlap</span><span style="color:#F97583">=</span><span style="color:#79B8FF">200</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">            separators</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">[</span><span style="color:#9ECBFF">"</span><span style="color:#79B8FF">\n\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">". "</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">" "</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">""</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.embeddings </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> OpenAIEmbeddings(</span></span>
+<span class="line"><span style="color:#FFAB70">            model</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"text-embedding-3-small"</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.vectorstore </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Chroma(</span></span>
+<span class="line"><span style="color:#FFAB70">            persist_directory</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"./chroma_db"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">            embedding_function</span><span style="color:#F97583">=</span><span style="color:#79B8FF">self</span><span style="color:#E1E4E8">.embeddings,</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    def</span><span style="color:#B392F0"> ingest</span><span style="color:#E1E4E8">(self, documents: list[</span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">], metadata: list[</span><span style="color:#79B8FF">dict</span><span style="color:#E1E4E8">]):</span></span>
+<span class="line"><span style="color:#E1E4E8">        chunks </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> []</span></span>
+<span class="line"><span style="color:#E1E4E8">        chunk_metadata </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> []</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> doc, meta </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> zip</span><span style="color:#E1E4E8">(documents, metadata):</span></span>
+<span class="line"><span style="color:#E1E4E8">            splits </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> self</span><span style="color:#E1E4E8">.splitter.split_text(doc)</span></span>
+<span class="line"><span style="color:#E1E4E8">            chunks.extend(splits)</span></span>
+<span class="line"><span style="color:#E1E4E8">            chunk_metadata.extend([meta] </span><span style="color:#F97583">*</span><span style="color:#79B8FF"> len</span><span style="color:#E1E4E8">(splits))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.vectorstore.add_texts(</span></span>
+<span class="line"><span style="color:#FFAB70">            texts</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">chunks,</span></span>
+<span class="line"><span style="color:#FFAB70">            metadatas</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">chunk_metadata,</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    def</span><span style="color:#B392F0"> query</span><span style="color:#E1E4E8">(self, question: </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">, k: </span><span style="color:#79B8FF">int</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 5</span><span style="color:#E1E4E8">) -> </span><span style="color:#79B8FF">list</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">        results </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> self</span><span style="color:#E1E4E8">.vectorstore.similarity_search_with_score(</span></span>
+<span class="line"><span style="color:#E1E4E8">            question, </span><span style="color:#FFAB70">k</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">k</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">            {</span></span>
+<span class="line"><span style="color:#9ECBFF">                "content"</span><span style="color:#E1E4E8">: doc.page_content,</span></span>
+<span class="line"><span style="color:#9ECBFF">                "metadata"</span><span style="color:#E1E4E8">: doc.metadata,</span></span>
+<span class="line"><span style="color:#9ECBFF">                "score"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">float</span><span style="color:#E1E4E8">(score),</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#F97583">            for</span><span style="color:#E1E4E8"> doc, score </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> results</span></span>
+<span class="line"><span style="color:#E1E4E8">        ]</span></span></code></pre>
+<h2 id="go-api-gateway">Go API Gateway</h2>
+<p>The Go service acts as the entry point for all client requests. It validates input, enforces rate limits, and routes to the appropriate backend:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="go"><code><span class="line"><span style="color:#F97583">package</span><span style="color:#B392F0"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">context</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">encoding/json</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">log</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">net/http</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">time</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/go-chi/chi/v5</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/go-chi/chi/v5/middleware</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#B392F0">github.com/go-chi/httprate</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> QueryRequest</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Question  </span><span style="color:#F97583">string</span><span style="color:#9ECBFF"> `json:"question" validate:"required,min=3"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    SessionID </span><span style="color:#F97583">string</span><span style="color:#9ECBFF"> `json:"session_id" validate:"required,uuid"`</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> QueryResponse</span><span style="color:#F97583"> struct</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Answer  </span><span style="color:#F97583">string</span><span style="color:#9ECBFF">   `json:"answer"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    Sources []</span><span style="color:#B392F0">Source</span><span style="color:#9ECBFF"> `json:"sources"`</span></span>
+<span class="line"><span style="color:#E1E4E8">    Latency </span><span style="color:#F97583">float64</span><span style="color:#9ECBFF">  `json:"latency_ms"`</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    r </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> chi.</span><span style="color:#B392F0">NewRouter</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Use</span><span style="color:#E1E4E8">(middleware.Logger)</span></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Use</span><span style="color:#E1E4E8">(middleware.Recoverer)</span></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Use</span><span style="color:#E1E4E8">(middleware.</span><span style="color:#B392F0">Timeout</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">30</span><span style="color:#F97583"> *</span><span style="color:#E1E4E8"> time.Second))</span></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Use</span><span style="color:#E1E4E8">(httprate.</span><span style="color:#B392F0">LimitByIP</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">time.Minute))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Post</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/api/v1/query"</span><span style="color:#E1E4E8">, handleQuery)</span></span>
+<span class="line"><span style="color:#E1E4E8">    r.</span><span style="color:#B392F0">Get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/api/v1/health"</span><span style="color:#E1E4E8">, handleHealth)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    log.</span><span style="color:#B392F0">Println</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Starting server on :8080"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    http.</span><span style="color:#B392F0">ListenAndServe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">":8080"</span><span style="color:#E1E4E8">, r)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">func</span><span style="color:#B392F0"> handleQuery</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">w</span><span style="color:#B392F0"> http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ResponseWriter</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">r</span><span style="color:#F97583"> *</span><span style="color:#B392F0">http</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    start </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> time.</span><span style="color:#B392F0">Now</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#E1E4E8"> req </span><span style="color:#B392F0">QueryRequest</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> json.</span><span style="color:#B392F0">NewDecoder</span><span style="color:#E1E4E8">(r.Body).</span><span style="color:#B392F0">Decode</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">req); err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        http.</span><span style="color:#B392F0">Error</span><span style="color:#E1E4E8">(w, </span><span style="color:#9ECBFF">"Invalid request body"</span><span style="color:#E1E4E8">, http.StatusBadRequest)</span></span>
+<span class="line"><span style="color:#F97583">        return</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    // Call Python RAG service</span></span>
+<span class="line"><span style="color:#E1E4E8">    ctx, cancel </span><span style="color:#F97583">:=</span><span style="color:#E1E4E8"> context.</span><span style="color:#B392F0">WithTimeout</span><span style="color:#E1E4E8">(r.</span><span style="color:#B392F0">Context</span><span style="color:#E1E4E8">(), </span><span style="color:#79B8FF">10</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">time.Second)</span></span>
+<span class="line"><span style="color:#F97583">    defer</span><span style="color:#B392F0"> cancel</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    answer, sources, err </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> callRAGService</span><span style="color:#E1E4E8">(ctx, req.Question, req.SessionID)</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> err </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> nil</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        http.</span><span style="color:#B392F0">Error</span><span style="color:#E1E4E8">(w, </span><span style="color:#9ECBFF">"Failed to process query"</span><span style="color:#E1E4E8">, http.StatusInternalServerError)</span></span>
+<span class="line"><span style="color:#F97583">        return</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    resp </span><span style="color:#F97583">:=</span><span style="color:#B392F0"> QueryResponse</span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">        Answer:  answer,</span></span>
+<span class="line"><span style="color:#E1E4E8">        Sources: sources,</span></span>
+<span class="line"><span style="color:#E1E4E8">        Latency: </span><span style="color:#F97583">float64</span><span style="color:#E1E4E8">(time.</span><span style="color:#B392F0">Since</span><span style="color:#E1E4E8">(start).</span><span style="color:#B392F0">Milliseconds</span><span style="color:#E1E4E8">()),</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    w.</span><span style="color:#B392F0">Header</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">Set</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Content-Type"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"application/json"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    json.</span><span style="color:#B392F0">NewEncoder</span><span style="color:#E1E4E8">(w).</span><span style="color:#B392F0">Encode</span><span style="color:#E1E4E8">(resp)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="communication-between-services">Communication Between Services</h2>
+<p>The Go gateway communicates with the Python service via gRPC for low-latency calls and Redis pub/sub for async jobs:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="protobuf"><code><span class="line"><span style="color:#F97583">syntax</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "proto3"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">package</span><span style="color:#9ECBFF"> ai</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">service</span><span style="color:#B392F0"> RAGService</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  rpc</span><span style="color:#B392F0"> Query</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">QueryRequest</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">returns</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">QueryResponse</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">  rpc</span><span style="color:#B392F0"> IngestDocument</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">IngestRequest</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">returns</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">IngestResponse</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">message</span><span style="color:#B392F0"> QueryRequest</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  string</span><span style="color:#E1E4E8"> question </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  string</span><span style="color:#E1E4E8"> session_id </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  int32</span><span style="color:#E1E4E8"> max_results </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 3</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">message</span><span style="color:#B392F0"> QueryResponse</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  string</span><span style="color:#E1E4E8"> answer </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  repeated</span><span style="color:#F97583"> Source</span><span style="color:#E1E4E8"> sources </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  float</span><span style="color:#E1E4E8"> confidence </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 3</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>gRPC gives us:</p>
+<ul>
+<li>Type-safe contracts between services</li>
+<li>Streaming for large responses</li>
+<li>~10x faster than REST for inter-service communication</li>
+<li>Auto-generated client code in both Go and Python</li>
+</ul>
+<h2 id="cost-optimization">Cost Optimization</h2>
+<p>LLM API calls are expensive. Here’s how we reduced costs by 60%:</p>
+<ol>
+<li><strong>Caching</strong> — Cache identical queries in Redis with a 1-hour TTL</li>
+<li><strong>Smaller models for routing</strong> — Use GPT-3.5 to classify the query type, only use GPT-4 for complex reasoning</li>
+<li><strong>Chunking strategy</strong> — Smaller, more precise chunks mean fewer tokens in the context window</li>
+<li><strong>Embedding caching</strong> — Don’t re-embed documents that haven’t changed</li>
+</ol>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> hashlib</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> redis</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> CachedRAG</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">    def</span><span style="color:#79B8FF"> __init__</span><span style="color:#E1E4E8">(self, rag_service, redis_client: redis.Redis):</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.rag </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> rag_service</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.cache </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> redis_client</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    def</span><span style="color:#B392F0"> query</span><span style="color:#E1E4E8">(self, question: </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">) -> </span><span style="color:#79B8FF">dict</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">        cache_key </span><span style="color:#F97583">=</span><span style="color:#F97583"> f</span><span style="color:#9ECBFF">"rag:</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">hashlib.sha256(question.encode()).hexdigest()</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        cached </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> self</span><span style="color:#E1E4E8">.cache.get(cache_key)</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> cached:</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> json.loads(cached)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        result </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> self</span><span style="color:#E1E4E8">.rag.query(question)</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.cache.setex(cache_key, </span><span style="color:#79B8FF">3600</span><span style="color:#E1E4E8">, json.dumps(result))</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> result</span></span></code></pre>
+<h2 id="deployment">Deployment</h2>
+<p>Both services run in Docker containers orchestrated with Docker Compose in staging and Kubernetes in production:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">services</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  gateway</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    build</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">./gateway</span></span>
+<span class="line"><span style="color:#85E89D">    ports</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">"8080:8080"</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">RAG_SERVICE_URL=rag:50051</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">REDIS_URL=redis://redis:6379</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  rag</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    build</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">./rag-service</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">OPENAI_API_KEY=${OPENAI_API_KEY}</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">CHROMA_PATH=/data/chroma</span></span>
+<span class="line"><span style="color:#85E89D">    volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">chroma_data:/data/chroma</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  redis</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">redis:alpine</span></span></code></pre>
+<p>This architecture has scaled well for us. The Go gateway handles 5000+ req/s on a single instance, and the Python RAG service processes queries in under 2 seconds including the LLM call.</p> </article> </div> </div>  <script type="module">const s=new IntersectionObserver(e=>{e.forEach(r=>{r.isIntersecting&&r.target.classList.add("visible")})},{threshold:.1});document.querySelectorAll(".reveal").forEach(e=>s.observe(e));</script> <script type="module">const c=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let o=[];document.addEventListener("keydown",t=>{window.__snakeActive||(o.push(t.key),o.length>c.length&&o.shift(),o.length===c.length&&o.every((e,i)=>e===c[i])&&(o=[],y()))});function y(){const t=document.createElement("canvas");t.style.cssText="position:fixed;inset:0;z-index:9999;pointer-events:none;",document.body.appendChild(t);const e=t.getContext("2d");t.width=window.innerWidth,t.height=window.innerHeight;const i="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*(){}[]|;:<>?/~",r=14,g=Math.floor(t.width/r),l=new Array(g).fill(0).map(()=>Math.random()*-50);let s=0,f=!1,h=!1;const m=performance.now();function d(){s=(performance.now()-m)/1e3,e.fillStyle="rgba(10, 14, 10, 0.05)",e.fillRect(0,0,t.width,t.height),e.fillStyle="#00ff41",e.font=`${r}px monospace`;for(let n=0;n<l.length;n++){const a=i[Math.floor(Math.random()*i.length)],p=n*r,w=l[n]*r;Math.random()>.95?e.fillStyle="#ffffff":e.fillStyle=`rgba(0, 255, 65, ${.4+Math.random()*.6})`,e.fillText(a,p,w),w>t.height&&Math.random()>.975&&(l[n]=0),l[n]+=.5}if(s>5&&!f&&(f=!0),f){e.save(),e.fillStyle="rgba(10, 14, 10, 0.7)";const n=500,a=60;e.fillRect((t.width-n)/2,(t.height-a)/2,n,a),e.font="bold 24px monospace",e.fillStyle="#00ff41",e.textAlign="center",e.textBaseline="middle",e.shadowColor="#00ff41",e.shadowBlur=20,e.fillText("YOU FOUND THE SECRET",t.width/2,t.height/2),e.restore()}s>10&&!h&&(h=!0,t.style.transition="opacity 3s ease",t.style.opacity="0",setTimeout(()=>t.remove(),3e3)),h||requestAnimationFrame(d)}requestAnimationFrame(d)}</script> </body> </html> <script type="module">document.querySelectorAll(".blog-content pre").forEach(t=>{const r=document.createElement("div");r.className="relative group",t.parentNode?.insertBefore(r,t),r.appendChild(t);const e=document.createElement("button");e.className="absolute top-2 right-2 text-[10px] text-term-text-dim px-2 py-1 rounded border border-term-border bg-term-bg hover:text-term-green hover:border-term-green-dark transition-all opacity-0 group-hover:opacity-100",e.textContent="Copy",r.appendChild(e),e.addEventListener("click",async()=>{const o=t.querySelector("code");await navigator.clipboard.writeText(o?.textContent||""),e.textContent="Copied!",e.classList.add("text-term-green","border-term-green-dark"),setTimeout(()=>{e.textContent="Copy",e.classList.remove("text-term-green","border-term-green-dark")},1500)})});</script>

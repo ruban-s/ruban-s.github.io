@@ -1,0 +1,237 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"><!-- Primary Meta --><meta name="description" content="Lessons from building custom modules, addons, and integrations for CS-Cart's enterprise multivendor platform."><meta name="author" content="Ruban S"><meta name="keywords" content="ecommerce"><!-- Open Graph --><meta property="og:type" content="article"><meta property="og:url" content="https://ruban.dev/blog/cscart-multivendor-development/"><meta property="og:title" content="CS-Cart Multivendor: Building Enterprise E-Commerce Addons | Ruban S"><meta property="og:description" content="Lessons from building custom modules, addons, and integrations for CS-Cart's enterprise multivendor platform."><meta property="og:image" content="https://ruban.dev/favicon.svg"><meta property="og:site_name" content="Ruban S Portfolio"><meta property="article:published_time" content="2026-02-05T00:00:00.000Z"><meta property="article:author" content="Ruban S"><meta property="article:tag" content="ecommerce"><!-- Twitter --><meta name="twitter:card" content="summary"><meta name="twitter:title" content="CS-Cart Multivendor: Building Enterprise E-Commerce Addons | Ruban S"><meta name="twitter:description" content="Lessons from building custom modules, addons, and integrations for CS-Cart's enterprise multivendor platform."><meta name="twitter:image" content="https://ruban.dev/favicon.svg"><!-- Canonical --><link rel="canonical" href="https://ruban.dev/blog/cscart-multivendor-development/"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN"><meta http-equiv="X-Content-Type-Options" content="nosniff"><meta name="referrer" content="strict-origin-when-cross-origin"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;"><title>CS-Cart Multivendor: Building Enterprise E-Commerce Addons | Ruban S</title><script>
+      const saved = localStorage.getItem('theme');
+      if (saved && saved !== 'green') document.documentElement.setAttribute('data-theme', saved);
+    </script><link rel="stylesheet" href="/_astro/_astro_content.DfLi3KDt.css"></head> <body class="bg-term-bg text-term-text font-mono text-sm leading-relaxed min-h-screen overflow-x-hidden">  <div class="max-w-[880px] mx-auto px-5 py-5"> <div class="bg-term-bg border border-term-border rounded-lg px-8 py-10 max-sm:px-4 max-sm:py-6"> <a href="/blog" class="text-xs text-term-text-dim hover:text-term-green transition-colors mb-6 inline-block">← back to blog</a> <div class="mb-2 flex items-center gap-3"> <span class="text-xs text-term-text-dim tabular-nums">2026-02-05</span> <span class="text-[10px] text-term-text-dim uppercase tracking-widest px-2 py-0.5 rounded bg-term-green/5 border border-term-border">ecommerce</span> </div> <h1 class="text-2xl font-bold text-white mb-8">CS-Cart Multivendor: Building Enterprise E-Commerce Addons</h1> <article class="blog-content prose prose-invert prose-sm max-w-none
+        [&_p]:text-term-text [&_p]:text-[13px] [&_p]:leading-[1.85] [&_p]:mb-4
+        [&_h2]:text-white [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-3
+        [&_h3]:text-white [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-2
+        [&_ul]:space-y-1.5 [&_li]:text-term-text [&_li]:text-[13px] [&_li]:leading-[1.85]
+        [&_ol]:space-y-1.5 [&_ol_li]:text-term-text [&_ol_li]:text-[13px]
+        [&_code]:text-term-green [&_code]:text-xs [&_code]:bg-term-card [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded
+        [&_pre]:relative [&_pre]:bg-term-card [&_pre]:border [&_pre]:border-term-border [&_pre]:rounded-md [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4
+        [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-term-text
+        [&_a]:text-term-green [&_a]:no-underline [&_a]:hover:opacity-80
+        [&_strong]:text-white
+        [&_blockquote]:border-l-2 [&_blockquote]:border-term-green-dark [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-term-text-dim
+        [&_hr]:border-term-border [&_hr]:my-8
+        [&_table]:w-full [&_th]:text-left [&_th]:text-term-green-dim [&_th]:text-xs [&_th]:pb-2 [&_th]:border-b [&_th]:border-term-border [&_td]:text-[13px] [&_td]:py-2 [&_td]:border-b [&_td]:border-term-border/50
+      "> <p>I’ve spent the last 3 years building custom addons for CS-Cart’s Multivendor platform at Shawne Applebee. CS-Cart isn’t as well-known as Shopify or Magento, but for multivendor marketplaces, it’s one of the most powerful platforms out there. Here’s what I’ve learned.</p>
+<h2 id="understanding-cs-cart-architecture">Understanding CS-Cart Architecture</h2>
+<p>CS-Cart follows an MVC-ish architecture with some unique concepts:</p>
+<ul>
+<li><strong>Addons</strong> — Self-contained modules that extend functionality</li>
+<li><strong>Hooks</strong> — Entry points throughout the codebase where addons can inject logic</li>
+<li><strong>Schemas</strong> — Define how data structures, menus, and settings work</li>
+<li><strong>Controllers</strong> — Handle HTTP requests (backend and API)</li>
+<li><strong>Templates</strong> — Smarty-based frontend rendering</li>
+</ul>
+<p>The addon system is where CS-Cart shines. You can modify almost any behavior without touching core files.</p>
+<h2 id="addon-file-structure">Addon File Structure</h2>
+<p>Every addon follows this structure:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>app/addons/my_addon/</span></span>
+<span class="line"><span>├── addon.xml                  # Addon metadata and settings</span></span>
+<span class="line"><span>├── init.php                   # Hook registrations</span></span>
+<span class="line"><span>├── func.php                   # Hook handler functions</span></span>
+<span class="line"><span>├── controllers/</span></span>
+<span class="line"><span>│   ├── backend/</span></span>
+<span class="line"><span>│   │   └── my_controller.php  # Admin panel controller</span></span>
+<span class="line"><span>│   └── frontend/</span></span>
+<span class="line"><span>│       └── my_controller.php  # Storefront controller</span></span>
+<span class="line"><span>├── schemas/</span></span>
+<span class="line"><span>│   └── menu/</span></span>
+<span class="line"><span>│       └── menu.post.php      # Admin menu entries</span></span>
+<span class="line"><span>├── database/</span></span>
+<span class="line"><span>│   └── install.sql            # Database migrations</span></span>
+<span class="line"><span>└── design/</span></span>
+<span class="line"><span>    ├── backend/</span></span>
+<span class="line"><span>    │   └── templates/</span></span>
+<span class="line"><span>    │       └── views/</span></span>
+<span class="line"><span>    └── frontend/</span></span>
+<span class="line"><span>        └── templates/</span></span></code></pre>
+<h2 id="creating-an-addon">Creating an Addon</h2>
+<p>The <code>addon.xml</code> defines your addon:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;?</span><span style="color:#85E89D">xml</span><span style="color:#B392F0"> version</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"1.0"</span><span style="color:#E1E4E8">?></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">addon</span><span style="color:#B392F0"> scheme</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"4.0"</span><span style="color:#B392F0"> edition_type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"ROOT,ULT:VENDOR"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">id</span><span style="color:#E1E4E8">>vendor_analytics&#x3C;/</span><span style="color:#85E89D">id</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">version</span><span style="color:#E1E4E8">>1.0.0&#x3C;/</span><span style="color:#85E89D">version</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">priority</span><span style="color:#E1E4E8">>500&#x3C;/</span><span style="color:#85E89D">priority</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">position</span><span style="color:#E1E4E8">>100&#x3C;/</span><span style="color:#85E89D">position</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">status</span><span style="color:#E1E4E8">>active&#x3C;/</span><span style="color:#85E89D">status</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">auto_install</span><span style="color:#E1E4E8">>MULTIVENDOR&#x3C;/</span><span style="color:#85E89D">auto_install</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">>Vendor Analytics Dashboard&#x3C;/</span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">description</span><span style="color:#E1E4E8">>Advanced analytics for marketplace vendors&#x3C;/</span><span style="color:#85E89D">description</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">settings</span><span style="color:#B392F0"> layout</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"separate"</span><span style="color:#B392F0"> edition_type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"ROOT"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;</span><span style="color:#85E89D">sections</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">            &#x3C;</span><span style="color:#85E89D">section</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"general"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                &#x3C;</span><span style="color:#85E89D">items</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                    &#x3C;</span><span style="color:#85E89D">item</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"analytics_retention_days"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                        &#x3C;</span><span style="color:#85E89D">type</span><span style="color:#E1E4E8">>input&#x3C;/</span><span style="color:#85E89D">type</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                        &#x3C;</span><span style="color:#85E89D">default_value</span><span style="color:#E1E4E8">>90&#x3C;/</span><span style="color:#85E89D">default_value</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                    &#x3C;/</span><span style="color:#85E89D">item</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                    &#x3C;</span><span style="color:#85E89D">item</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"enable_realtime"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                        &#x3C;</span><span style="color:#85E89D">type</span><span style="color:#E1E4E8">>checkbox&#x3C;/</span><span style="color:#85E89D">type</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                        &#x3C;</span><span style="color:#85E89D">default_value</span><span style="color:#E1E4E8">>Y&#x3C;/</span><span style="color:#85E89D">default_value</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                    &#x3C;/</span><span style="color:#85E89D">item</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">                &#x3C;/</span><span style="color:#85E89D">items</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">            &#x3C;/</span><span style="color:#85E89D">section</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;/</span><span style="color:#85E89D">sections</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;/</span><span style="color:#85E89D">settings</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">addon</span><span style="color:#E1E4E8">></span></span></code></pre>
+<h2 id="working-with-hooks">Working with Hooks</h2>
+<p>Hooks are the backbone of CS-Cart customization. There are two types: <strong>PHP hooks</strong> for logic and <strong>TPL hooks</strong> for templates.</p>
+<h3 id="php-hook-example">PHP Hook Example</h3>
+<p>Register hooks in <code>init.php</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&#x3C;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">defined</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'BOOTSTRAP'</span><span style="color:#E1E4E8">)) { </span><span style="color:#F97583">die</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Access denied'</span><span style="color:#E1E4E8">); }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">fn_register_hooks</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">    'get_orders_post'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    'place_order'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    'calculate_cart_post'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    'vendor_plan_after_update'</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<p>Implement them in <code>func.php</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&#x3C;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">defined</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'BOOTSTRAP'</span><span style="color:#E1E4E8">)) { </span><span style="color:#F97583">die</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Access denied'</span><span style="color:#E1E4E8">); }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> fn_vendor_analytics_get_orders_post</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">$params, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">$orders)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">empty</span><span style="color:#E1E4E8">($orders)) {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    foreach</span><span style="color:#E1E4E8"> ($orders </span><span style="color:#F97583">as</span><span style="color:#F97583"> &#x26;</span><span style="color:#E1E4E8">$order) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $order[</span><span style="color:#9ECBFF">'analytics'</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#B392F0"> db_get_row</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">            "</span><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span><span style="color:#F97583"> FROM</span><span style="color:#9ECBFF"> ?:vendor_analytics </span><span style="color:#F97583">WHERE</span><span style="color:#9ECBFF"> order_id </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> ?i"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            $order[</span><span style="color:#9ECBFF">'order_id'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> fn_vendor_analytics_place_order</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">$order_id, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">$action, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">$order_status, </span><span style="color:#F97583">&#x26;</span><span style="color:#E1E4E8">$cart)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">empty</span><span style="color:#E1E4E8">($order_id)) {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    $company_id </span><span style="color:#F97583">=</span><span style="color:#B392F0"> fn_get_company_id</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'orders'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'order_id'</span><span style="color:#E1E4E8">, $order_id);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    db_query</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">        "</span><span style="color:#F97583">INSERT INTO</span><span style="color:#9ECBFF"> ?:vendor_analytics </span><span style="color:#F97583">SET</span><span style="color:#9ECBFF"> "</span><span style="color:#F97583"> .</span></span>
+<span class="line"><span style="color:#9ECBFF">        "order_id = ?i, "</span><span style="color:#F97583"> .</span></span>
+<span class="line"><span style="color:#9ECBFF">        "company_id = ?i, "</span><span style="color:#F97583"> .</span></span>
+<span class="line"><span style="color:#9ECBFF">        "revenue = ?d, "</span><span style="color:#F97583"> .</span></span>
+<span class="line"><span style="color:#9ECBFF">        "items_count = ?i, "</span><span style="color:#F97583"> .</span></span>
+<span class="line"><span style="color:#9ECBFF">        "created_at = ?s"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        $order_id,</span></span>
+<span class="line"><span style="color:#E1E4E8">        $company_id,</span></span>
+<span class="line"><span style="color:#E1E4E8">        $cart[</span><span style="color:#9ECBFF">'total'</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#79B8FF">        count</span><span style="color:#E1E4E8">($cart[</span><span style="color:#9ECBFF">'products'</span><span style="color:#E1E4E8">]),</span></span>
+<span class="line"><span style="color:#79B8FF">        date</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Y-m-d H:i:s'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    );</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="database-migrations">Database Migrations</h2>
+<p>CS-Cart doesn’t have a migration system like Laravel. You write raw SQL:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#6A737D">-- database/install.sql</span></span>
+<span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#B392F0"> IF</span><span style="color:#F97583"> NOT</span><span style="color:#F97583"> EXISTS</span><span style="color:#9ECBFF"> `cscart_vendor_analytics`</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#9ECBFF">    `analytics_id`</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">11</span><span style="color:#E1E4E8">) unsigned </span><span style="color:#F97583">NOT NULL</span><span style="color:#E1E4E8"> AUTO_INCREMENT,</span></span>
+<span class="line"><span style="color:#9ECBFF">    `order_id`</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">11</span><span style="color:#E1E4E8">) unsigned </span><span style="color:#F97583">NOT NULL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    `company_id`</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">11</span><span style="color:#E1E4E8">) unsigned </span><span style="color:#F97583">NOT NULL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    `revenue`</span><span style="color:#F97583"> decimal</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">12</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">NOT NULL</span><span style="color:#F97583"> DEFAULT</span><span style="color:#9ECBFF"> '0.00'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    `items_count`</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">11</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">NOT NULL</span><span style="color:#F97583"> DEFAULT</span><span style="color:#9ECBFF"> '0'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    `conversion_source`</span><span style="color:#F97583"> varchar</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">DEFAULT</span><span style="color:#F97583"> NULL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    `created_at`</span><span style="color:#F97583"> datetime</span><span style="color:#F97583"> NOT NULL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#F97583">    PRIMARY KEY</span><span style="color:#E1E4E8"> (</span><span style="color:#9ECBFF">`analytics_id`</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#F97583">    KEY</span><span style="color:#9ECBFF"> `idx_company_date`</span><span style="color:#E1E4E8"> (</span><span style="color:#9ECBFF">`company_id`</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">`created_at`</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#F97583">    KEY</span><span style="color:#9ECBFF"> `idx_order`</span><span style="color:#E1E4E8"> (</span><span style="color:#9ECBFF">`order_id`</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">) ENGINE</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">InnoDB </span><span style="color:#F97583">DEFAULT</span><span style="color:#E1E4E8"> CHARSET</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">utf8mb4;</span></span></code></pre>
+<p>For upgrades, create version-specific migration files and handle them in your addon’s install/upgrade logic.</p>
+<h2 id="building-admin-controllers">Building Admin Controllers</h2>
+<p>Controllers in CS-Cart follow a specific pattern:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="php"><code><span class="line"><span style="color:#F97583">&#x3C;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#79B8FF">defined</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'BOOTSTRAP'</span><span style="color:#E1E4E8">)) { </span><span style="color:#F97583">die</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Access denied'</span><span style="color:#E1E4E8">); }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#79B8FF"> Tygh\Registry</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ($_SERVER[</span><span style="color:#9ECBFF">'REQUEST_METHOD'</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'POST'</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> ($mode </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'update'</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $analytics_data </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $_REQUEST[</span><span style="color:#9ECBFF">'analytics_data'</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">        db_query</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">            "</span><span style="color:#F97583">UPDATE</span><span style="color:#9ECBFF"> ?:vendor_analytics </span><span style="color:#F97583">SET</span><span style="color:#9ECBFF"> ?u </span><span style="color:#F97583">WHERE</span><span style="color:#9ECBFF"> analytics_id </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> ?i"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            $analytics_data,</span></span>
+<span class="line"><span style="color:#E1E4E8">            $analytics_data[</span><span style="color:#9ECBFF">'analytics_id'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">        fn_set_notification</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'N'</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">__</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'notice'</span><span style="color:#E1E4E8">), </span><span style="color:#B392F0">__</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'text_data_updated'</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">CONTROLLER_STATUS_OK</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'vendor_analytics.manage'</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ($mode </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'manage'</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $company_id </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> Registry</span><span style="color:#F97583">::</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'runtime.company_id'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">    list</span><span style="color:#E1E4E8">($analytics, $search) </span><span style="color:#F97583">=</span><span style="color:#B392F0"> fn_get_vendor_analytics</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">        array_merge</span><span style="color:#E1E4E8">($_REQUEST, [</span><span style="color:#9ECBFF">'company_id'</span><span style="color:#F97583"> =></span><span style="color:#E1E4E8"> $company_id]),</span></span>
+<span class="line"><span style="color:#79B8FF">        Registry</span><span style="color:#F97583">::</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'settings.Appearance.admin_elements_per_page'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">    Tygh</span><span style="color:#F97583">::</span><span style="color:#E1E4E8">$app[</span><span style="color:#9ECBFF">'view'</span><span style="color:#E1E4E8">]</span><span style="color:#F97583">-></span><span style="color:#B392F0">assign</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'analytics'</span><span style="color:#E1E4E8">, $analytics);</span></span>
+<span class="line"><span style="color:#79B8FF">    Tygh</span><span style="color:#F97583">::</span><span style="color:#E1E4E8">$app[</span><span style="color:#9ECBFF">'view'</span><span style="color:#E1E4E8">]</span><span style="color:#F97583">-></span><span style="color:#B392F0">assign</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'search'</span><span style="color:#E1E4E8">, $search);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">} </span><span style="color:#F97583">elseif</span><span style="color:#E1E4E8"> ($mode </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'dashboard'</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $company_id </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> Registry</span><span style="color:#F97583">::</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'runtime.company_id'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    $stats </span><span style="color:#F97583">=</span><span style="color:#B392F0"> fn_get_vendor_dashboard_stats</span><span style="color:#E1E4E8">($company_id);</span></span>
+<span class="line"><span style="color:#79B8FF">    Tygh</span><span style="color:#F97583">::</span><span style="color:#E1E4E8">$app[</span><span style="color:#9ECBFF">'view'</span><span style="color:#E1E4E8">]</span><span style="color:#F97583">-></span><span style="color:#B392F0">assign</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'stats'</span><span style="color:#E1E4E8">, $stats);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<p>CS-Cart can be slow if you’re not careful. Lessons learned:</p>
+<ol>
+<li><strong>Always add database indexes</strong> on columns you query frequently, especially <code>company_id</code> and date columns</li>
+<li><strong>Use <code>db_get_hash_array</code></strong> instead of <code>db_get_array</code> + manual indexing</li>
+<li><strong>Cache expensive queries</strong> using CS-Cart’s built-in cache registry</li>
+<li><strong>Avoid N+1 queries in hooks</strong> — batch your database calls</li>
+<li><strong>Use Varnish</strong> in front of the storefront for static page caching</li>
+</ol>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="php"><code><span class="line"><span style="color:#6A737D">// Bad: N+1 query</span></span>
+<span class="line"><span style="color:#F97583">foreach</span><span style="color:#E1E4E8"> ($products </span><span style="color:#F97583">as</span><span style="color:#F97583"> &#x26;</span><span style="color:#E1E4E8">$product) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $product[</span><span style="color:#9ECBFF">'vendor'</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#B392F0"> db_get_row</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">        "</span><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span><span style="color:#F97583"> FROM</span><span style="color:#9ECBFF"> ?:companies </span><span style="color:#F97583">WHERE</span><span style="color:#9ECBFF"> company_id </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> ?i"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        $product[</span><span style="color:#9ECBFF">'company_id'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    );</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Good: Single query, then map</span></span>
+<span class="line"><span style="color:#E1E4E8">$company_ids </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> array_column</span><span style="color:#E1E4E8">($products, </span><span style="color:#9ECBFF">'company_id'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$vendors </span><span style="color:#F97583">=</span><span style="color:#B392F0"> db_get_hash_array</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">    "</span><span style="color:#F97583">SELECT</span><span style="color:#F97583"> *</span><span style="color:#F97583"> FROM</span><span style="color:#9ECBFF"> ?:companies </span><span style="color:#F97583">WHERE</span><span style="color:#9ECBFF"> company_id </span><span style="color:#F97583">IN</span><span style="color:#9ECBFF"> (?n)"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    'company_id'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    $company_ids</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">foreach</span><span style="color:#E1E4E8"> ($products </span><span style="color:#F97583">as</span><span style="color:#F97583"> &#x26;</span><span style="color:#E1E4E8">$product) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $product[</span><span style="color:#9ECBFF">'vendor'</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $vendors[$product[</span><span style="color:#9ECBFF">'company_id'</span><span style="color:#E1E4E8">]] </span><span style="color:#F97583">??</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="testing-addons">Testing Addons</h2>
+<p>CS-Cart doesn’t have built-in testing support, but you can add PHPUnit:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">    "require-dev"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">        "phpunit/phpunit"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"^10.0"</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#79B8FF">    "autoload"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">        "psr-4"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">            "VendorAnalytics\\"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"app/addons/vendor_analytics/src/"</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>I test the business logic in isolation by extracting it into service classes, then write integration tests that hit the actual database.</p>
+<h2 id="wrapping-up">Wrapping Up</h2>
+<p>CS-Cart development has a steep learning curve — the documentation is sparse, and the hook system requires reading core source code to understand what data is available. But once you understand the patterns, you can build powerful marketplace features that would take months to build from scratch.</p>
+<p>The multivendor addon I built at Shawne Applebee processes thousands of orders daily and has been running in production for over two years without major issues.</p> </article> </div> </div>  <script type="module">const s=new IntersectionObserver(e=>{e.forEach(r=>{r.isIntersecting&&r.target.classList.add("visible")})},{threshold:.1});document.querySelectorAll(".reveal").forEach(e=>s.observe(e));</script> <script type="module">const c=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let o=[];document.addEventListener("keydown",t=>{window.__snakeActive||(o.push(t.key),o.length>c.length&&o.shift(),o.length===c.length&&o.every((e,i)=>e===c[i])&&(o=[],y()))});function y(){const t=document.createElement("canvas");t.style.cssText="position:fixed;inset:0;z-index:9999;pointer-events:none;",document.body.appendChild(t);const e=t.getContext("2d");t.width=window.innerWidth,t.height=window.innerHeight;const i="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*(){}[]|;:<>?/~",r=14,g=Math.floor(t.width/r),l=new Array(g).fill(0).map(()=>Math.random()*-50);let s=0,f=!1,h=!1;const m=performance.now();function d(){s=(performance.now()-m)/1e3,e.fillStyle="rgba(10, 14, 10, 0.05)",e.fillRect(0,0,t.width,t.height),e.fillStyle="#00ff41",e.font=`${r}px monospace`;for(let n=0;n<l.length;n++){const a=i[Math.floor(Math.random()*i.length)],p=n*r,w=l[n]*r;Math.random()>.95?e.fillStyle="#ffffff":e.fillStyle=`rgba(0, 255, 65, ${.4+Math.random()*.6})`,e.fillText(a,p,w),w>t.height&&Math.random()>.975&&(l[n]=0),l[n]+=.5}if(s>5&&!f&&(f=!0),f){e.save(),e.fillStyle="rgba(10, 14, 10, 0.7)";const n=500,a=60;e.fillRect((t.width-n)/2,(t.height-a)/2,n,a),e.font="bold 24px monospace",e.fillStyle="#00ff41",e.textAlign="center",e.textBaseline="middle",e.shadowColor="#00ff41",e.shadowBlur=20,e.fillText("YOU FOUND THE SECRET",t.width/2,t.height/2),e.restore()}s>10&&!h&&(h=!0,t.style.transition="opacity 3s ease",t.style.opacity="0",setTimeout(()=>t.remove(),3e3)),h||requestAnimationFrame(d)}requestAnimationFrame(d)}</script> </body> </html> <script type="module">document.querySelectorAll(".blog-content pre").forEach(t=>{const r=document.createElement("div");r.className="relative group",t.parentNode?.insertBefore(r,t),r.appendChild(t);const e=document.createElement("button");e.className="absolute top-2 right-2 text-[10px] text-term-text-dim px-2 py-1 rounded border border-term-border bg-term-bg hover:text-term-green hover:border-term-green-dark transition-all opacity-0 group-hover:opacity-100",e.textContent="Copy",r.appendChild(e),e.addEventListener("click",async()=>{const o=t.querySelector("code");await navigator.clipboard.writeText(o?.textContent||""),e.textContent="Copied!",e.classList.add("text-term-green","border-term-green-dark"),setTimeout(()=>{e.textContent="Copy",e.classList.remove("text-term-green","border-term-green-dark")},1500)})});</script>

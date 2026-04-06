@@ -1,0 +1,200 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"><!-- Primary Meta --><meta name="description" content="How I built MaskDial — a phone formatting library with React/Vue components, Zod/Yup validators, and WCAG 2.2 compliance from the ground up."><meta name="author" content="Ruban S"><meta name="keywords" content="open-source"><!-- Open Graph --><meta property="og:type" content="article"><meta property="og:url" content="https://ruban.dev/blog/maskdial-phone-formatting/"><meta property="og:title" content="Building MaskDial: A Phone Number Library with React, Vue, and Full Accessibility | Ruban S"><meta property="og:description" content="How I built MaskDial — a phone formatting library with React/Vue components, Zod/Yup validators, and WCAG 2.2 compliance from the ground up."><meta property="og:image" content="https://ruban.dev/favicon.svg"><meta property="og:site_name" content="Ruban S Portfolio"><meta property="article:published_time" content="2026-03-10T00:00:00.000Z"><meta property="article:author" content="Ruban S"><meta property="article:tag" content="open-source"><!-- Twitter --><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Building MaskDial: A Phone Number Library with React, Vue, and Full Accessibility | Ruban S"><meta name="twitter:description" content="How I built MaskDial — a phone formatting library with React/Vue components, Zod/Yup validators, and WCAG 2.2 compliance from the ground up."><meta name="twitter:image" content="https://ruban.dev/favicon.svg"><!-- Canonical --><link rel="canonical" href="https://ruban.dev/blog/maskdial-phone-formatting/"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN"><meta http-equiv="X-Content-Type-Options" content="nosniff"><meta name="referrer" content="strict-origin-when-cross-origin"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;"><title>Building MaskDial: A Phone Number Library with React, Vue, and Full Accessibility | Ruban S</title><script>
+      const saved = localStorage.getItem('theme');
+      if (saved && saved !== 'green') document.documentElement.setAttribute('data-theme', saved);
+    </script><link rel="stylesheet" href="/_astro/_astro_content.DfLi3KDt.css"></head> <body class="bg-term-bg text-term-text font-mono text-sm leading-relaxed min-h-screen overflow-x-hidden">  <div class="max-w-[880px] mx-auto px-5 py-5"> <div class="bg-term-bg border border-term-border rounded-lg px-8 py-10 max-sm:px-4 max-sm:py-6"> <a href="/blog" class="text-xs text-term-text-dim hover:text-term-green transition-colors mb-6 inline-block">← back to blog</a> <div class="mb-2 flex items-center gap-3"> <span class="text-xs text-term-text-dim tabular-nums">2026-03-10</span> <span class="text-[10px] text-term-text-dim uppercase tracking-widest px-2 py-0.5 rounded bg-term-green/5 border border-term-border">open-source</span> </div> <h1 class="text-2xl font-bold text-white mb-8">Building MaskDial: A Phone Number Library with React, Vue, and Full Accessibility</h1> <article class="blog-content prose prose-invert prose-sm max-w-none
+        [&_p]:text-term-text [&_p]:text-[13px] [&_p]:leading-[1.85] [&_p]:mb-4
+        [&_h2]:text-white [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-3
+        [&_h3]:text-white [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-2
+        [&_ul]:space-y-1.5 [&_li]:text-term-text [&_li]:text-[13px] [&_li]:leading-[1.85]
+        [&_ol]:space-y-1.5 [&_ol_li]:text-term-text [&_ol_li]:text-[13px]
+        [&_code]:text-term-green [&_code]:text-xs [&_code]:bg-term-card [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded
+        [&_pre]:relative [&_pre]:bg-term-card [&_pre]:border [&_pre]:border-term-border [&_pre]:rounded-md [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4
+        [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-term-text
+        [&_a]:text-term-green [&_a]:no-underline [&_a]:hover:opacity-80
+        [&_strong]:text-white
+        [&_blockquote]:border-l-2 [&_blockquote]:border-term-green-dark [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-term-text-dim
+        [&_hr]:border-term-border [&_hr]:my-8
+        [&_table]:w-full [&_th]:text-left [&_th]:text-term-green-dim [&_th]:text-xs [&_th]:pb-2 [&_th]:border-b [&_th]:border-term-border [&_td]:text-[13px] [&_td]:py-2 [&_td]:border-b [&_td]:border-term-border/50
+      "> <p>Phone number inputs are deceptively complex. Different countries have different formats, users paste numbers in random formats, and most existing libraries either lack framework support or ignore accessibility entirely. I built MaskDial to solve all of this in one package.</p>
+<h2 id="what-maskdial-does">What MaskDial Does</h2>
+<ul>
+<li>React hooks/components and Vue 3 composables from a single package</li>
+<li>Country selector with 200+ countries and flag emojis</li>
+<li>Zod and Yup validation schemas</li>
+<li>Full WCAG 2.2 compliance with ARIA, keyboard navigation, and screen reader support</li>
+<li>Smart cursor positioning that doesn’t jump around during formatting</li>
+<li>Powered by <code>libphonenumber-js</code> for accurate formatting</li>
+</ul>
+<h2 id="the-architecture">The Architecture</h2>
+<p>The library is structured in layers:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>maskdial/</span></span>
+<span class="line"><span>├── core/              # Pure formatting logic (no framework)</span></span>
+<span class="line"><span>│   ├── formatter.ts   # Phone number formatting engine</span></span>
+<span class="line"><span>│   ├── countries.ts   # Country data (codes, patterns, flags)</span></span>
+<span class="line"><span>│   ├── cursor.ts      # Smart cursor position tracking</span></span>
+<span class="line"><span>│   └── validators.ts  # Zod/Yup schema generators</span></span>
+<span class="line"><span>├── react/             # React adapter</span></span>
+<span class="line"><span>│   ├── usePhoneInput.ts</span></span>
+<span class="line"><span>│   ├── PhoneInput.tsx</span></span>
+<span class="line"><span>│   └── CountrySelector.tsx</span></span>
+<span class="line"><span>├── vue/               # Vue adapter</span></span>
+<span class="line"><span>│   ├── usePhoneInput.ts</span></span>
+<span class="line"><span>│   ├── PhoneInput.vue</span></span>
+<span class="line"><span>│   └── CountrySelector.vue</span></span>
+<span class="line"><span>└── vanilla/           # Vanilla JS adapter</span></span>
+<span class="line"><span>    └── index.ts</span></span></code></pre>
+<p>The core has zero framework dependencies. Each adapter is a thin wrapper that connects the formatting engine to the framework’s reactivity system.</p>
+<h2 id="the-cursor-problem">The Cursor Problem</h2>
+<p>The hardest part of building a formatted input is cursor positioning. When a user types “123” and it formats to “+1 (23”, where should the cursor be? Most libraries get this wrong — the cursor jumps to the end after every keystroke.</p>
+<p>My solution tracks the cursor position relative to the raw digits, not the formatted string:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="typescript"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> CursorState</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#FFAB70">  rawPosition</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#FFAB70">  formatted</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#FFAB70">  raw</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> calculateCursorPosition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#FFAB70">  prevState</span><span style="color:#F97583">:</span><span style="color:#B392F0"> CursorState</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">  newRaw</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">  newFormatted</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">  inputCursor</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">  // Count how many raw digits are before the cursor</span></span>
+<span class="line"><span style="color:#F97583">  let</span><span style="color:#E1E4E8"> rawDigitsBefore </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  let</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  while</span><span style="color:#E1E4E8"> (i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> inputCursor </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> newFormatted.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#9ECBFF">/</span><span style="color:#79B8FF">\d</span><span style="color:#9ECBFF">/</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">test</span><span style="color:#E1E4E8">(newFormatted[i])) {</span></span>
+<span class="line"><span style="color:#E1E4E8">      rawDigitsBefore</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">  // Find where that many raw digits end in the new formatted string</span></span>
+<span class="line"><span style="color:#F97583">  let</span><span style="color:#E1E4E8"> digitCount </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">let</span><span style="color:#E1E4E8"> pos </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; pos </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> newFormatted.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">; pos</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#9ECBFF">/</span><span style="color:#79B8FF">\d</span><span style="color:#9ECBFF">/</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">test</span><span style="color:#E1E4E8">(newFormatted[pos])) {</span></span>
+<span class="line"><span style="color:#E1E4E8">      digitCount</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">      if</span><span style="color:#E1E4E8"> (digitCount </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> rawDigitsBefore) {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> pos </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> newFormatted.</span><span style="color:#79B8FF">length</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>This approach means the cursor always stays next to the digit the user just typed, regardless of what formatting characters (spaces, dashes, parentheses) get inserted around it.</p>
+<h2 id="react-integration">React Integration</h2>
+<p>The React hook provides a clean API:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="tsx"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { usePhoneInput } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'maskdial/react'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">function</span><span style="color:#B392F0"> PhoneForm</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    inputProps</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    country</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    setCountry</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    phoneNumber</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    isValid</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    formattedValue</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  } </span><span style="color:#F97583">=</span><span style="color:#B392F0"> usePhoneInput</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    defaultCountry: </span><span style="color:#9ECBFF">'IN'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#B392F0">    onChange</span><span style="color:#E1E4E8">: (</span><span style="color:#FFAB70">value</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Phone:'</span><span style="color:#E1E4E8">, value),</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">      &#x3C;</span><span style="color:#79B8FF">CountrySelector</span></span>
+<span class="line"><span style="color:#B392F0">        value</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{country}</span></span>
+<span class="line"><span style="color:#B392F0">        onChange</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{setCountry}</span></span>
+<span class="line"><span style="color:#E1E4E8">      /></span></span>
+<span class="line"><span style="color:#E1E4E8">      &#x3C;</span><span style="color:#85E89D">input</span><span style="color:#E1E4E8"> {</span><span style="color:#F97583">...</span><span style="color:#E1E4E8">inputProps} /></span></span>
+<span class="line"><span style="color:#E1E4E8">      {</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">isValid </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> &#x3C;</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">>Invalid phone number&#x3C;/</span><span style="color:#85E89D">span</span><span style="color:#E1E4E8">>}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  );</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>The hook handles all the complexity — formatting, cursor positioning, country detection from the number prefix, and validation. The component just spreads <code>inputProps</code> onto a regular <code>&#x3C;input></code>.</p>
+<h2 id="form-validation">Form Validation</h2>
+<p>MaskDial ships Zod and Yup schemas so validation integrates naturally with form libraries:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="typescript"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { phoneSchema } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'maskdial/validators/zod'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { z } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'zod'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> contactForm</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> z.</span><span style="color:#B392F0">object</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  name: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">min</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">  email: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">email</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">  phone: </span><span style="color:#B392F0">phoneSchema</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">    country: </span><span style="color:#9ECBFF">'IN'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    required: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    mobile: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// With Yup</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { phoneSchema </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> yupPhone } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'maskdial/validators/yup'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#79B8FF"> *</span><span style="color:#F97583"> as</span><span style="color:#E1E4E8"> yup </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'yup'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> schema</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> yup.</span><span style="color:#B392F0">object</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  phone: </span><span style="color:#B392F0">yupPhone</span><span style="color:#E1E4E8">({ country: </span><span style="color:#9ECBFF">'IN'</span><span style="color:#E1E4E8"> }).</span><span style="color:#B392F0">required</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<h2 id="accessibility-wcag-22">Accessibility (WCAG 2.2)</h2>
+<p>Accessibility wasn’t an afterthought — it was a core requirement. The country selector is fully keyboard-navigable:</p>
+<ul>
+<li><strong>Arrow keys</strong> to browse countries</li>
+<li><strong>Type to search</strong> by country name or code</li>
+<li><strong>Enter</strong> to select</li>
+<li><strong>Escape</strong> to close</li>
+<li><strong>Tab</strong> moves focus naturally</li>
+<li><strong>ARIA labels</strong> on every interactive element</li>
+<li><strong>Screen reader announcements</strong> for country changes and validation errors</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="tsx"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">div</span></span>
+<span class="line"><span style="color:#B392F0">  role</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"combobox"</span></span>
+<span class="line"><span style="color:#B392F0">  aria-expanded</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{isOpen}</span></span>
+<span class="line"><span style="color:#B392F0">  aria-haspopup</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"listbox"</span></span>
+<span class="line"><span style="color:#B392F0">  aria-label</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"Select country"</span></span>
+<span class="line"><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  &#x3C;</span><span style="color:#85E89D">button</span></span>
+<span class="line"><span style="color:#B392F0">    aria-label</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">`Selected country: ${</span><span style="color:#E1E4E8">country</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">name</span><span style="color:#9ECBFF">} (${</span><span style="color:#E1E4E8">country</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">dialCode</span><span style="color:#9ECBFF">})`</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#B392F0">    onClick</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{toggle}</span></span>
+<span class="line"><span style="color:#E1E4E8">  ></span></span>
+<span class="line"><span style="color:#E1E4E8">    {country.flag} {country.dialCode}</span></span>
+<span class="line"><span style="color:#E1E4E8">  &#x3C;/</span><span style="color:#85E89D">button</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  {isOpen </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">ul</span><span style="color:#B392F0"> role</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"listbox"</span><span style="color:#B392F0"> aria-label</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"Countries"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">      {countries.</span><span style="color:#B392F0">map</span><span style="color:#E1E4E8">((</span><span style="color:#FFAB70">c</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">i</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;</span><span style="color:#85E89D">li</span></span>
+<span class="line"><span style="color:#B392F0">          role</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"option"</span></span>
+<span class="line"><span style="color:#B392F0">          aria-selected</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{c.code </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> country.code}</span></span>
+<span class="line"><span style="color:#B392F0">          tabIndex</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{</span><span style="color:#F97583">-</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">        ></span></span>
+<span class="line"><span style="color:#E1E4E8">          {c.flag} {c.name} ({c.dialCode})</span></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;/</span><span style="color:#85E89D">li</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">      ))}</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;/</span><span style="color:#85E89D">ul</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  )}</span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">></span></span></code></pre>
+<h2 id="testing">Testing</h2>
+<p>The library has extensive tests covering:</p>
+<ul>
+<li>Every country’s formatting pattern</li>
+<li>Cursor position across insertions, deletions, and paste operations</li>
+<li>Keyboard navigation for the country selector</li>
+<li>Screen reader output verification</li>
+<li>Edge cases: empty input, invalid characters, switching countries mid-input</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="typescript"><code><span class="line"><span style="color:#B392F0">describe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'Indian phone formatting'</span><span style="color:#E1E4E8">, () </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">  it</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'formats a mobile number'</span><span style="color:#E1E4E8">, () </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">    expect</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">format</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'9843677492'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'IN'</span><span style="color:#E1E4E8">)).</span><span style="color:#B392F0">toBe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'+91 98436 77492'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  it</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'handles partial input'</span><span style="color:#E1E4E8">, () </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">    expect</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">format</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'984'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'IN'</span><span style="color:#E1E4E8">)).</span><span style="color:#B392F0">toBe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'+91 984'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  it</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'detects country from prefix'</span><span style="color:#E1E4E8">, () </span><span style="color:#F97583">=></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">    expect</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">detectCountry</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'+919843677492'</span><span style="color:#E1E4E8">)).</span><span style="color:#B392F0">toBe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'IN'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span></code></pre>
+<h2 id="what-i-learned">What I Learned</h2>
+<p>Building a library that works across React, Vue, and vanilla JS forced me to think about clean separation of concerns. The core formatting engine knows nothing about React or Vue — it takes a string in and returns a formatted string out. The framework adapters are under 100 lines each.</p>
+<p>The accessibility work was the most rewarding part. Making the country selector work with VoiceOver and NVDA required testing with actual screen readers, not just checking ARIA attributes. There’s a big gap between “technically accessible” and “actually usable.”</p>
+<p>Check out the project on <a href="https://github.com/ruban-s/MaskDial">GitHub</a>.</p> </article> </div> </div>  <script type="module">const s=new IntersectionObserver(e=>{e.forEach(r=>{r.isIntersecting&&r.target.classList.add("visible")})},{threshold:.1});document.querySelectorAll(".reveal").forEach(e=>s.observe(e));</script> <script type="module">const c=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let o=[];document.addEventListener("keydown",t=>{window.__snakeActive||(o.push(t.key),o.length>c.length&&o.shift(),o.length===c.length&&o.every((e,i)=>e===c[i])&&(o=[],y()))});function y(){const t=document.createElement("canvas");t.style.cssText="position:fixed;inset:0;z-index:9999;pointer-events:none;",document.body.appendChild(t);const e=t.getContext("2d");t.width=window.innerWidth,t.height=window.innerHeight;const i="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*(){}[]|;:<>?/~",r=14,g=Math.floor(t.width/r),l=new Array(g).fill(0).map(()=>Math.random()*-50);let s=0,f=!1,h=!1;const m=performance.now();function d(){s=(performance.now()-m)/1e3,e.fillStyle="rgba(10, 14, 10, 0.05)",e.fillRect(0,0,t.width,t.height),e.fillStyle="#00ff41",e.font=`${r}px monospace`;for(let n=0;n<l.length;n++){const a=i[Math.floor(Math.random()*i.length)],p=n*r,w=l[n]*r;Math.random()>.95?e.fillStyle="#ffffff":e.fillStyle=`rgba(0, 255, 65, ${.4+Math.random()*.6})`,e.fillText(a,p,w),w>t.height&&Math.random()>.975&&(l[n]=0),l[n]+=.5}if(s>5&&!f&&(f=!0),f){e.save(),e.fillStyle="rgba(10, 14, 10, 0.7)";const n=500,a=60;e.fillRect((t.width-n)/2,(t.height-a)/2,n,a),e.font="bold 24px monospace",e.fillStyle="#00ff41",e.textAlign="center",e.textBaseline="middle",e.shadowColor="#00ff41",e.shadowBlur=20,e.fillText("YOU FOUND THE SECRET",t.width/2,t.height/2),e.restore()}s>10&&!h&&(h=!0,t.style.transition="opacity 3s ease",t.style.opacity="0",setTimeout(()=>t.remove(),3e3)),h||requestAnimationFrame(d)}requestAnimationFrame(d)}</script> </body> </html> <script type="module">document.querySelectorAll(".blog-content pre").forEach(t=>{const r=document.createElement("div");r.className="relative group",t.parentNode?.insertBefore(r,t),r.appendChild(t);const e=document.createElement("button");e.className="absolute top-2 right-2 text-[10px] text-term-text-dim px-2 py-1 rounded border border-term-border bg-term-bg hover:text-term-green hover:border-term-green-dark transition-all opacity-0 group-hover:opacity-100",e.textContent="Copy",r.appendChild(e),e.addEventListener("click",async()=>{const o=t.querySelector("code");await navigator.clipboard.writeText(o?.textContent||""),e.textContent="Copied!",e.classList.add("text-term-green","border-term-green-dark"),setTimeout(()=>{e.textContent="Copy",e.classList.remove("text-term-green","border-term-green-dark")},1500)})});</script>

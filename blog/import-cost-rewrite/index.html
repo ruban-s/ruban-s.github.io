@@ -1,0 +1,164 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"><!-- Primary Meta --><meta name="description" content="How I modernized the Import Cost VS Code extension by replacing Webpack with esbuild, Babel with SWC, and cutting runtime dependencies from 16 to 2."><meta name="author" content="Ruban S"><meta name="keywords" content="open-source"><!-- Open Graph --><meta property="og:type" content="article"><meta property="og:url" content="https://ruban.dev/blog/import-cost-rewrite/"><meta property="og:title" content="Rewriting Import Cost: From Webpack to esbuild, Babel to SWC | Ruban S"><meta property="og:description" content="How I modernized the Import Cost VS Code extension by replacing Webpack with esbuild, Babel with SWC, and cutting runtime dependencies from 16 to 2."><meta property="og:image" content="https://ruban.dev/favicon.svg"><meta property="og:site_name" content="Ruban S Portfolio"><meta property="article:published_time" content="2026-03-25T00:00:00.000Z"><meta property="article:author" content="Ruban S"><meta property="article:tag" content="open-source"><!-- Twitter --><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Rewriting Import Cost: From Webpack to esbuild, Babel to SWC | Ruban S"><meta name="twitter:description" content="How I modernized the Import Cost VS Code extension by replacing Webpack with esbuild, Babel with SWC, and cutting runtime dependencies from 16 to 2."><meta name="twitter:image" content="https://ruban.dev/favicon.svg"><!-- Canonical --><link rel="canonical" href="https://ruban.dev/blog/import-cost-rewrite/"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN"><meta http-equiv="X-Content-Type-Options" content="nosniff"><meta name="referrer" content="strict-origin-when-cross-origin"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;"><title>Rewriting Import Cost: From Webpack to esbuild, Babel to SWC | Ruban S</title><script>
+      const saved = localStorage.getItem('theme');
+      if (saved && saved !== 'green') document.documentElement.setAttribute('data-theme', saved);
+    </script><link rel="stylesheet" href="/_astro/_astro_content.DfLi3KDt.css"></head> <body class="bg-term-bg text-term-text font-mono text-sm leading-relaxed min-h-screen overflow-x-hidden">  <div class="max-w-[880px] mx-auto px-5 py-5"> <div class="bg-term-bg border border-term-border rounded-lg px-8 py-10 max-sm:px-4 max-sm:py-6"> <a href="/blog" class="text-xs text-term-text-dim hover:text-term-green transition-colors mb-6 inline-block">← back to blog</a> <div class="mb-2 flex items-center gap-3"> <span class="text-xs text-term-text-dim tabular-nums">2026-03-25</span> <span class="text-[10px] text-term-text-dim uppercase tracking-widest px-2 py-0.5 rounded bg-term-green/5 border border-term-border">open-source</span> </div> <h1 class="text-2xl font-bold text-white mb-8">Rewriting Import Cost: From Webpack to esbuild, Babel to SWC</h1> <article class="blog-content prose prose-invert prose-sm max-w-none
+        [&_p]:text-term-text [&_p]:text-[13px] [&_p]:leading-[1.85] [&_p]:mb-4
+        [&_h2]:text-white [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-3
+        [&_h3]:text-white [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-2
+        [&_ul]:space-y-1.5 [&_li]:text-term-text [&_li]:text-[13px] [&_li]:leading-[1.85]
+        [&_ol]:space-y-1.5 [&_ol_li]:text-term-text [&_ol_li]:text-[13px]
+        [&_code]:text-term-green [&_code]:text-xs [&_code]:bg-term-card [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded
+        [&_pre]:relative [&_pre]:bg-term-card [&_pre]:border [&_pre]:border-term-border [&_pre]:rounded-md [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4
+        [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-term-text
+        [&_a]:text-term-green [&_a]:no-underline [&_a]:hover:opacity-80
+        [&_strong]:text-white
+        [&_blockquote]:border-l-2 [&_blockquote]:border-term-green-dark [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-term-text-dim
+        [&_hr]:border-term-border [&_hr]:my-8
+        [&_table]:w-full [&_th]:text-left [&_th]:text-term-green-dim [&_th]:text-xs [&_th]:pb-2 [&_th]:border-b [&_th]:border-term-border [&_td]:text-[13px] [&_td]:py-2 [&_td]:border-b [&_td]:border-term-border/50
+      "> <p>Import Cost is a popular VS Code extension that shows the size of imported packages inline in your editor. The original version used Webpack and Babel — heavy tools that worked, but were slow and bloated. I rewrote the core to use modern, Rust/Go-based tooling and the results were dramatic.</p>
+<h2 id="the-problem">The Problem</h2>
+<p>The original Import Cost had <strong>16 runtime dependencies</strong> including Webpack, Babel, cheerio, terser, worker-farm, css-loader, file-loader, url-loader, and 12 browser polyfills. For what’s essentially a “bundle this import and tell me the size” operation, this was overkill.</p>
+<p>Every time you typed an import statement, the extension would:</p>
+<ol>
+<li>Parse the file with <strong>Babel</strong> (JavaScript, slow)</li>
+<li>Bundle the import with <strong>Webpack</strong> (JavaScript, slow)</li>
+<li>Minify with <strong>terser</strong> (JavaScript, slow)</li>
+<li>Report the size</li>
+</ol>
+<p>The whole pipeline could take several seconds for large packages.</p>
+<h2 id="the-rewrite">The Rewrite</h2>
+<p>I replaced every JavaScript tool with its Rust or Go equivalent:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Before</th><th>After</th><th>Speedup</th></tr></thead><tbody><tr><td>Babel (parser)</td><td>SWC (Rust)</td><td>5-10x faster</td></tr><tr><td>Webpack (bundler)</td><td>esbuild (Go)</td><td>10-100x faster</td></tr><tr><td>ESLint + Prettier</td><td>Biome (Rust)</td><td>Single tool</td></tr><tr><td>Webpack (extension build)</td><td>esbuild</td><td>Instant builds</td></tr></tbody></table>
+<h3 id="swc-for-parsing">SWC for Parsing</h3>
+<p>SWC is a Rust-based JavaScript/TypeScript compiler. For parsing import statements, it’s massively faster than Babel:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="typescript"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { parseFile } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> '@swc/core'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> extractImports</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">filePath</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> ast</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> parseFile</span><span style="color:#E1E4E8">(filePath, {</span></span>
+<span class="line"><span style="color:#E1E4E8">    syntax: </span><span style="color:#9ECBFF">'typescript'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    tsx: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> imports</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">[] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> node</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> ast.body) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (node.type </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'ImportDeclaration'</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">      imports.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">(node.source.value);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (node.type </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'VariableDeclaration'</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">      for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">const</span><span style="color:#79B8FF"> decl</span><span style="color:#F97583"> of</span><span style="color:#E1E4E8"> node.declarations) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">          decl.init?.type </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'CallExpression'</span><span style="color:#F97583"> &#x26;&#x26;</span></span>
+<span class="line"><span style="color:#E1E4E8">          decl.init.callee.type </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'Identifier'</span><span style="color:#F97583"> &#x26;&#x26;</span></span>
+<span class="line"><span style="color:#E1E4E8">          decl.init.callee.value </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'require'</span></span>
+<span class="line"><span style="color:#E1E4E8">        ) {</span></span>
+<span class="line"><span style="color:#F97583">          const</span><span style="color:#79B8FF"> arg</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> decl.init.arguments[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">          if</span><span style="color:#E1E4E8"> (arg?.expression.type </span><span style="color:#F97583">===</span><span style="color:#9ECBFF"> 'StringLiteral'</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            imports.</span><span style="color:#B392F0">push</span><span style="color:#E1E4E8">(arg.expression.value);</span></span>
+<span class="line"><span style="color:#E1E4E8">          }</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">      }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  return</span><span style="color:#E1E4E8"> imports;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="esbuild-for-bundling">esbuild for Bundling</h3>
+<p>esbuild replaces both Webpack (bundling) and terser (minification) in a single pass:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="typescript"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { build } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'esbuild'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { writeFileSync, unlinkSync } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'fs'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { tmpdir } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'os'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { join } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'path'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { gzipSync } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'zlib'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> function</span><span style="color:#B392F0"> calculateImportSize</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">packageName</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> entryContent</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> `import '${</span><span style="color:#E1E4E8">packageName</span><span style="color:#9ECBFF">}';`</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> entryFile</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> join</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">tmpdir</span><span style="color:#E1E4E8">(), </span><span style="color:#9ECBFF">`import-cost-${</span><span style="color:#E1E4E8">Date</span><span style="color:#9ECBFF">.</span><span style="color:#B392F0">now</span><span style="color:#9ECBFF">()</span><span style="color:#9ECBFF">}.js`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">  writeFileSync</span><span style="color:#E1E4E8">(entryFile, entryContent);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> result</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> build</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">      entryPoints: [entryFile],</span></span>
+<span class="line"><span style="color:#E1E4E8">      bundle: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      write: </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      minify: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      platform: </span><span style="color:#9ECBFF">'browser'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      format: </span><span style="color:#9ECBFF">'esm'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      treeShaking: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">      metafile: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> output</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> result.outputFiles[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> minifiedSize</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> output.contents.byteLength;</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> gzippedSize</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> gzipSync</span><span style="color:#E1E4E8">(output.contents).byteLength;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> { minifiedSize, gzippedSize };</span></span>
+<span class="line"><span style="color:#E1E4E8">  } </span><span style="color:#F97583">finally</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">    unlinkSync</span><span style="color:#E1E4E8">(entryFile);</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>This runs in <strong>milliseconds</strong> where Webpack took seconds. esbuild’s Go implementation handles bundling, tree-shaking, and minification in a single pass.</p>
+<h2 id="project-structure">Project Structure</h2>
+<p>The project uses npm workspaces as a monorepo:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>packages/</span></span>
+<span class="line"><span>├── import-cost/          # Core Node module</span></span>
+<span class="line"><span>│   ├── src/</span></span>
+<span class="line"><span>│   │   ├── parser.ts     # SWC-based import extraction</span></span>
+<span class="line"><span>│   │   ├── bundler.ts    # esbuild-based size calculation</span></span>
+<span class="line"><span>│   │   └── index.ts      # Public API</span></span>
+<span class="line"><span>│   └── package.json</span></span>
+<span class="line"><span>├── vscode-import-cost/   # VS Code extension</span></span>
+<span class="line"><span>│   ├── src/</span></span>
+<span class="line"><span>│   │   ├── extension.ts  # Extension entry point</span></span>
+<span class="line"><span>│   │   └── decorator.ts  # Inline size display</span></span>
+<span class="line"><span>│   └── package.json</span></span>
+<span class="line"><span>├── coc-import-cost/      # Vim/Neovim extension</span></span>
+<span class="line"><span>│   └── ...</span></span>
+<span class="line"><span>└── native-fs-adapter/    # Filesystem cache adapter</span></span>
+<span class="line"><span>    └── ...</span></span></code></pre>
+<p>The core <code>import-cost</code> package is framework-agnostic — it exports a simple API that any editor extension can use:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="typescript"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { importCost } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> 'import-cost'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> results</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> importCost</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'/path/to/file.ts'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#6A737D">// [{ name: 'lodash', size: 72384, gzip: 25412, line: 1 }]</span></span></code></pre>
+<h2 id="results">Results</h2>
+<p>After the rewrite:</p>
+<ul>
+<li><strong>Runtime dependencies</strong>: 16 → 2 (<code>esbuild</code>, <code>@swc/core</code>)</li>
+<li><strong>Extension startup</strong>: ~3s → ~200ms</li>
+<li><strong>Import size calculation</strong>: 2-5s → 50-200ms</li>
+<li><strong>Extension bundle size</strong>: Significantly smaller</li>
+</ul>
+<p>The key takeaway: modern Rust/Go tooling isn’t just faster — it’s simpler. One tool replaces five, and the code is more readable because there are fewer layers of configuration.</p>
+<p>Check out the project on <a href="https://github.com/ruban-s/import-cost">GitHub</a>.</p> </article> </div> </div>  <script type="module">const s=new IntersectionObserver(e=>{e.forEach(r=>{r.isIntersecting&&r.target.classList.add("visible")})},{threshold:.1});document.querySelectorAll(".reveal").forEach(e=>s.observe(e));</script> <script type="module">const c=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let o=[];document.addEventListener("keydown",t=>{window.__snakeActive||(o.push(t.key),o.length>c.length&&o.shift(),o.length===c.length&&o.every((e,i)=>e===c[i])&&(o=[],y()))});function y(){const t=document.createElement("canvas");t.style.cssText="position:fixed;inset:0;z-index:9999;pointer-events:none;",document.body.appendChild(t);const e=t.getContext("2d");t.width=window.innerWidth,t.height=window.innerHeight;const i="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*(){}[]|;:<>?/~",r=14,g=Math.floor(t.width/r),l=new Array(g).fill(0).map(()=>Math.random()*-50);let s=0,f=!1,h=!1;const m=performance.now();function d(){s=(performance.now()-m)/1e3,e.fillStyle="rgba(10, 14, 10, 0.05)",e.fillRect(0,0,t.width,t.height),e.fillStyle="#00ff41",e.font=`${r}px monospace`;for(let n=0;n<l.length;n++){const a=i[Math.floor(Math.random()*i.length)],p=n*r,w=l[n]*r;Math.random()>.95?e.fillStyle="#ffffff":e.fillStyle=`rgba(0, 255, 65, ${.4+Math.random()*.6})`,e.fillText(a,p,w),w>t.height&&Math.random()>.975&&(l[n]=0),l[n]+=.5}if(s>5&&!f&&(f=!0),f){e.save(),e.fillStyle="rgba(10, 14, 10, 0.7)";const n=500,a=60;e.fillRect((t.width-n)/2,(t.height-a)/2,n,a),e.font="bold 24px monospace",e.fillStyle="#00ff41",e.textAlign="center",e.textBaseline="middle",e.shadowColor="#00ff41",e.shadowBlur=20,e.fillText("YOU FOUND THE SECRET",t.width/2,t.height/2),e.restore()}s>10&&!h&&(h=!0,t.style.transition="opacity 3s ease",t.style.opacity="0",setTimeout(()=>t.remove(),3e3)),h||requestAnimationFrame(d)}requestAnimationFrame(d)}</script> </body> </html> <script type="module">document.querySelectorAll(".blog-content pre").forEach(t=>{const r=document.createElement("div");r.className="relative group",t.parentNode?.insertBefore(r,t),r.appendChild(t);const e=document.createElement("button");e.className="absolute top-2 right-2 text-[10px] text-term-text-dim px-2 py-1 rounded border border-term-border bg-term-bg hover:text-term-green hover:border-term-green-dark transition-all opacity-0 group-hover:opacity-100",e.textContent="Copy",r.appendChild(e),e.addEventListener("click",async()=>{const o=t.querySelector("code");await navigator.clipboard.writeText(o?.textContent||""),e.textContent="Copied!",e.classList.add("text-term-green","border-term-green-dark"),setTimeout(()=>{e.textContent="Copy",e.classList.remove("text-term-green","border-term-green-dark")},1500)})});</script>

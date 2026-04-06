@@ -1,0 +1,313 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"><!-- Primary Meta --><meta name="description" content="A complete Docker setup for PHP applications with Nginx, MySQL, Redis, and production deployment strategies."><meta name="author" content="Ruban S"><meta name="keywords" content="docker"><!-- Open Graph --><meta property="og:type" content="article"><meta property="og:url" content="https://ruban.dev/blog/docker-for-php-developers/"><meta property="og:title" content="Docker for PHP Developers: From Local Dev to Production | Ruban S"><meta property="og:description" content="A complete Docker setup for PHP applications with Nginx, MySQL, Redis, and production deployment strategies."><meta property="og:image" content="https://ruban.dev/favicon.svg"><meta property="og:site_name" content="Ruban S Portfolio"><meta property="article:published_time" content="2026-01-10T00:00:00.000Z"><meta property="article:author" content="Ruban S"><meta property="article:tag" content="docker"><!-- Twitter --><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Docker for PHP Developers: From Local Dev to Production | Ruban S"><meta name="twitter:description" content="A complete Docker setup for PHP applications with Nginx, MySQL, Redis, and production deployment strategies."><meta name="twitter:image" content="https://ruban.dev/favicon.svg"><!-- Canonical --><link rel="canonical" href="https://ruban.dev/blog/docker-for-php-developers/"><meta http-equiv="X-Frame-Options" content="SAMEORIGIN"><meta http-equiv="X-Content-Type-Options" content="nosniff"><meta name="referrer" content="strict-origin-when-cross-origin"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;"><title>Docker for PHP Developers: From Local Dev to Production | Ruban S</title><script>
+      const saved = localStorage.getItem('theme');
+      if (saved && saved !== 'green') document.documentElement.setAttribute('data-theme', saved);
+    </script><link rel="stylesheet" href="/_astro/_astro_content.DfLi3KDt.css"></head> <body class="bg-term-bg text-term-text font-mono text-sm leading-relaxed min-h-screen overflow-x-hidden">  <div class="max-w-[880px] mx-auto px-5 py-5"> <div class="bg-term-bg border border-term-border rounded-lg px-8 py-10 max-sm:px-4 max-sm:py-6"> <a href="/blog" class="text-xs text-term-text-dim hover:text-term-green transition-colors mb-6 inline-block">← back to blog</a> <div class="mb-2 flex items-center gap-3"> <span class="text-xs text-term-text-dim tabular-nums">2026-01-10</span> <span class="text-[10px] text-term-text-dim uppercase tracking-widest px-2 py-0.5 rounded bg-term-green/5 border border-term-border">docker</span> </div> <h1 class="text-2xl font-bold text-white mb-8">Docker for PHP Developers: From Local Dev to Production</h1> <article class="blog-content prose prose-invert prose-sm max-w-none
+        [&_p]:text-term-text [&_p]:text-[13px] [&_p]:leading-[1.85] [&_p]:mb-4
+        [&_h2]:text-white [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-3
+        [&_h3]:text-white [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-2
+        [&_ul]:space-y-1.5 [&_li]:text-term-text [&_li]:text-[13px] [&_li]:leading-[1.85]
+        [&_ol]:space-y-1.5 [&_ol_li]:text-term-text [&_ol_li]:text-[13px]
+        [&_code]:text-term-green [&_code]:text-xs [&_code]:bg-term-card [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded
+        [&_pre]:relative [&_pre]:bg-term-card [&_pre]:border [&_pre]:border-term-border [&_pre]:rounded-md [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4
+        [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-term-text
+        [&_a]:text-term-green [&_a]:no-underline [&_a]:hover:opacity-80
+        [&_strong]:text-white
+        [&_blockquote]:border-l-2 [&_blockquote]:border-term-green-dark [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-term-text-dim
+        [&_hr]:border-term-border [&_hr]:my-8
+        [&_table]:w-full [&_th]:text-left [&_th]:text-term-green-dim [&_th]:text-xs [&_th]:pb-2 [&_th]:border-b [&_th]:border-term-border [&_td]:text-[13px] [&_td]:py-2 [&_td]:border-b [&_td]:border-term-border/50
+      "> <p>I’ve dockerized over a dozen PHP projects — Laravel, Magento, CS-Cart. This is the setup I’ve refined over time, covering local development, debugging, performance tuning, and production deployment.</p>
+<h2 id="the-development-stack">The Development Stack</h2>
+<p>Most PHP projects need these four services:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Service</th><th>Image</th><th>Purpose</th></tr></thead><tbody><tr><td>Nginx</td><td><code>nginx:alpine</code></td><td>Web server, reverse proxy</td></tr><tr><td>PHP-FPM</td><td>Custom build</td><td>PHP processing</td></tr><tr><td>MySQL</td><td><code>mysql:8</code></td><td>Primary database</td></tr><tr><td>Redis</td><td><code>redis:alpine</code></td><td>Cache, sessions, queues</td></tr></tbody></table>
+<h2 id="docker-compose-configuration">Docker Compose Configuration</h2>
+<p>Here’s the <code>docker-compose.yml</code> I start every project with:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">'3.8'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">services</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  nginx</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">nginx:alpine</span></span>
+<span class="line"><span style="color:#85E89D">    ports</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">"8080:80"</span></span>
+<span class="line"><span style="color:#85E89D">    volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">./src:/var/www/html</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf</span></span>
+<span class="line"><span style="color:#85E89D">    depends_on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">php</span></span>
+<span class="line"><span style="color:#85E89D">    networks</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">app</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  php</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    build</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      context</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">./docker/php</span></span>
+<span class="line"><span style="color:#85E89D">      dockerfile</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Dockerfile</span></span>
+<span class="line"><span style="color:#85E89D">    volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">./src:/var/www/html</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">DB_HOST=mysql</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">DB_DATABASE=app</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">DB_USERNAME=root</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">DB_PASSWORD=secret</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">REDIS_HOST=redis</span></span>
+<span class="line"><span style="color:#85E89D">    depends_on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      mysql</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">        condition</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">service_healthy</span></span>
+<span class="line"><span style="color:#85E89D">    networks</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">app</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  mysql</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">mysql:8</span></span>
+<span class="line"><span style="color:#85E89D">    ports</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">"3306:3306"</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      MYSQL_ROOT_PASSWORD</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">secret</span></span>
+<span class="line"><span style="color:#85E89D">      MYSQL_DATABASE</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">app</span></span>
+<span class="line"><span style="color:#85E89D">    volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">mysql_data:/var/lib/mysql</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql</span></span>
+<span class="line"><span style="color:#85E89D">    healthcheck</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      test</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"CMD"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"mysqladmin"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"ping"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"-h"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"localhost"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#85E89D">      interval</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">5s</span></span>
+<span class="line"><span style="color:#85E89D">      timeout</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">3s</span></span>
+<span class="line"><span style="color:#85E89D">      retries</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">10</span></span>
+<span class="line"><span style="color:#85E89D">    networks</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">app</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">  redis</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">redis:alpine</span></span>
+<span class="line"><span style="color:#85E89D">    ports</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">"6379:6379"</span></span>
+<span class="line"><span style="color:#85E89D">    volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">redis_data:/data</span></span>
+<span class="line"><span style="color:#85E89D">    networks</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">app</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">volumes</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  mysql_data</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  redis_data</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">networks</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  app</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    driver</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">bridge</span></span></code></pre>
+<p>Key decisions in this config:</p>
+<ul>
+<li><strong>Health checks on MySQL</strong> — PHP won’t crash on startup waiting for the database</li>
+<li><strong>Named volumes</strong> — data persists between container restarts</li>
+<li><strong>Custom network</strong> — services communicate by name (<code>mysql</code>, <code>redis</code>)</li>
+<li><strong>Volume mounts for config</strong> — change Nginx/PHP config without rebuilding</li>
+</ul>
+<h2 id="custom-php-dockerfile">Custom PHP Dockerfile</h2>
+<p>The default PHP images are minimal. Here’s what I add:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="dockerfile"><code><span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> php:8.3-fpm-alpine</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Install system dependencies</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> apk add --no-cache \</span></span>
+<span class="line"><span style="color:#E1E4E8">    freetype-dev \</span></span>
+<span class="line"><span style="color:#E1E4E8">    libjpeg-turbo-dev \</span></span>
+<span class="line"><span style="color:#E1E4E8">    libpng-dev \</span></span>
+<span class="line"><span style="color:#E1E4E8">    libzip-dev \</span></span>
+<span class="line"><span style="color:#E1E4E8">    icu-dev \</span></span>
+<span class="line"><span style="color:#E1E4E8">    oniguruma-dev \</span></span>
+<span class="line"><span style="color:#E1E4E8">    $PHPIZE_DEPS</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Install PHP extensions</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> docker-php-ext-configure gd --with-freetype --with-jpeg \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x26;&#x26; docker-php-ext-install -j$(nproc) \</span></span>
+<span class="line"><span style="color:#E1E4E8">        pdo_mysql \</span></span>
+<span class="line"><span style="color:#E1E4E8">        gd \</span></span>
+<span class="line"><span style="color:#E1E4E8">        zip \</span></span>
+<span class="line"><span style="color:#E1E4E8">        intl \</span></span>
+<span class="line"><span style="color:#E1E4E8">        mbstring \</span></span>
+<span class="line"><span style="color:#E1E4E8">        opcache \</span></span>
+<span class="line"><span style="color:#E1E4E8">        pcntl \</span></span>
+<span class="line"><span style="color:#E1E4E8">        bcmath</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Install Redis extension</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> pecl install redis &#x26;&#x26; docker-php-ext-enable redis</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Install Composer</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> --from=composer:latest /usr/bin/composer /usr/bin/composer</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Set working directory</span></span>
+<span class="line"><span style="color:#F97583">WORKDIR</span><span style="color:#E1E4E8"> /var/www/html</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># PHP-FPM configuration for performance</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> echo </span><span style="color:#9ECBFF">"pm.max_children = 50"</span><span style="color:#E1E4E8"> >> /usr/local/etc/php-fpm.d/www.conf \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x26;&#x26; echo </span><span style="color:#9ECBFF">"pm.start_servers = 10"</span><span style="color:#E1E4E8"> >> /usr/local/etc/php-fpm.d/www.conf \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x26;&#x26; echo </span><span style="color:#9ECBFF">"pm.min_spare_servers = 5"</span><span style="color:#E1E4E8"> >> /usr/local/etc/php-fpm.d/www.conf \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x26;&#x26; echo </span><span style="color:#9ECBFF">"pm.max_spare_servers = 20"</span><span style="color:#E1E4E8"> >> /usr/local/etc/php-fpm.d/www.conf</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">USER</span><span style="color:#E1E4E8"> www-data</span></span></code></pre>
+<h2 id="nginx-configuration">Nginx Configuration</h2>
+<p>The Nginx config for PHP-FPM:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="nginx"><code><span class="line"><span style="color:#F97583">server</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    listen </span><span style="color:#79B8FF">80</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    server_name </span><span style="color:#E1E4E8">localhost;</span></span>
+<span class="line"><span style="color:#F97583">    root </span><span style="color:#E1E4E8">/var/www/html/public;</span></span>
+<span class="line"><span style="color:#F97583">    index </span><span style="color:#E1E4E8">index.php index.html;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Gzip compression</span></span>
+<span class="line"><span style="color:#F97583">    gzip </span><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    gzip_types </span><span style="color:#E1E4E8">text/plain text/css application/json application/javascript text/xml;</span></span>
+<span class="line"><span style="color:#F97583">    gzip_min_length </span><span style="color:#79B8FF">256</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Static file caching</span></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#F97583"> ~*</span><span style="color:#DBEDFF"> \.(jpg|jpeg|png|gif|ico|css|js|woff2)$ </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        expires </span><span style="color:#79B8FF">30d</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        add_header </span><span style="color:#E1E4E8">Cache-Control </span><span style="color:#9ECBFF">"public, immutable"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#B392F0"> / </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        try_files </span><span style="color:#E1E4E8">$uri $uri/ /index.php?$query_string;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#F97583"> ~</span><span style="color:#DBEDFF"> \.php$ </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_pass </span><span style="color:#E1E4E8">php:9000;</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_index </span><span style="color:#E1E4E8">index.php;</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_param </span><span style="color:#E1E4E8">SCRIPT_FILENAME $document_root$fastcgi_script_name;</span></span>
+<span class="line"><span style="color:#F97583">        include </span><span style="color:#E1E4E8">fastcgi_params;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        # Timeouts for long-running scripts</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_read_timeout </span><span style="color:#79B8FF">300</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_buffers </span><span style="color:#79B8FF">16</span><span style="color:#79B8FF"> 16k</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        fastcgi_buffer_size </span><span style="color:#79B8FF">32k</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Block access to sensitive files</span></span>
+<span class="line"><span style="color:#F97583">    location</span><span style="color:#F97583"> ~</span><span style="color:#DBEDFF"> /\.(env|git|htaccess) </span><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">        deny </span><span style="color:#79B8FF">all</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="php-configuration-for-development">PHP Configuration for Development</h2>
+<p>Create <code>docker/php/php.ini</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#6A737D">; Error reporting (development)</span></span>
+<span class="line"><span style="color:#F97583">display_errors</span><span style="color:#E1E4E8"> = On</span></span>
+<span class="line"><span style="color:#F97583">error_reporting</span><span style="color:#E1E4E8"> = E_ALL</span></span>
+<span class="line"><span style="color:#F97583">log_errors</span><span style="color:#E1E4E8"> = On</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Performance</span></span>
+<span class="line"><span style="color:#F97583">memory_limit</span><span style="color:#E1E4E8"> = 256M</span></span>
+<span class="line"><span style="color:#F97583">max_execution_time</span><span style="color:#E1E4E8"> = 300</span></span>
+<span class="line"><span style="color:#F97583">upload_max_filesize</span><span style="color:#E1E4E8"> = 50M</span></span>
+<span class="line"><span style="color:#F97583">post_max_size</span><span style="color:#E1E4E8"> = 50M</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; OPcache (enable even in dev for speed)</span></span>
+<span class="line"><span style="color:#F97583">opcache.enable</span><span style="color:#E1E4E8"> = 1</span></span>
+<span class="line"><span style="color:#F97583">opcache.memory_consumption</span><span style="color:#E1E4E8"> = 128</span></span>
+<span class="line"><span style="color:#F97583">opcache.max_accelerated_files</span><span style="color:#E1E4E8"> = 10000</span></span>
+<span class="line"><span style="color:#F97583">opcache.validate_timestamps</span><span style="color:#E1E4E8"> = 1</span></span>
+<span class="line"><span style="color:#F97583">opcache.revalidate_freq</span><span style="color:#E1E4E8"> = 0</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">; Session handling with Redis</span></span>
+<span class="line"><span style="color:#F97583">session.save_handler</span><span style="color:#E1E4E8"> = redis</span></span>
+<span class="line"><span style="color:#F97583">session.save_path</span><span style="color:#E1E4E8"> = </span><span style="color:#9ECBFF">"tcp://redis:6379"</span></span></code></pre>
+<h2 id="useful-commands">Useful Commands</h2>
+<p>Commands I run daily:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Start the stack</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> up</span><span style="color:#79B8FF"> -d</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Watch logs</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> logs</span><span style="color:#79B8FF"> -f</span><span style="color:#9ECBFF"> php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Run artisan commands (Laravel)</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> exec</span><span style="color:#9ECBFF"> php</span><span style="color:#9ECBFF"> php</span><span style="color:#9ECBFF"> artisan</span><span style="color:#9ECBFF"> migrate</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> exec</span><span style="color:#9ECBFF"> php</span><span style="color:#9ECBFF"> php</span><span style="color:#9ECBFF"> artisan</span><span style="color:#9ECBFF"> queue:work</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Run composer</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> exec</span><span style="color:#9ECBFF"> php</span><span style="color:#9ECBFF"> composer</span><span style="color:#9ECBFF"> install</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Access MySQL CLI</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> exec</span><span style="color:#9ECBFF"> mysql</span><span style="color:#9ECBFF"> mysql</span><span style="color:#79B8FF"> -u</span><span style="color:#9ECBFF"> root</span><span style="color:#79B8FF"> -psecret</span><span style="color:#9ECBFF"> app</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Clear Redis cache</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> exec</span><span style="color:#9ECBFF"> redis</span><span style="color:#9ECBFF"> redis-cli</span><span style="color:#9ECBFF"> FLUSHALL</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Rebuild after Dockerfile changes</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> build</span><span style="color:#79B8FF"> --no-cache</span><span style="color:#9ECBFF"> php</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> up</span><span style="color:#79B8FF"> -d</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Check resource usage</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> stats</span></span></code></pre>
+<h2 id="production-dockerfile">Production Dockerfile</h2>
+<p>For production, the Dockerfile changes significantly:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="dockerfile"><code><span class="line"><span style="color:#F97583">FROM</span><span style="color:#E1E4E8"> php:8.3-fpm-alpine </span><span style="color:#F97583">AS</span><span style="color:#E1E4E8"> production</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> apk add --no-cache \</span></span>
+<span class="line"><span style="color:#E1E4E8">    freetype-dev libjpeg-turbo-dev libpng-dev \</span></span>
+<span class="line"><span style="color:#E1E4E8">    libzip-dev icu-dev oniguruma-dev</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> docker-php-ext-configure gd --with-freetype --with-jpeg \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x26;&#x26; docker-php-ext-install -j$(nproc) \</span></span>
+<span class="line"><span style="color:#E1E4E8">        pdo_mysql gd zip intl mbstring opcache pcntl bcmath</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> pecl install redis &#x26;&#x26; docker-php-ext-enable redis</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> --from=composer:latest /usr/bin/composer /usr/bin/composer</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">WORKDIR</span><span style="color:#E1E4E8"> /var/www/html</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Copy application code</span></span>
+<span class="line"><span style="color:#F97583">COPY</span><span style="color:#E1E4E8"> --chown=www-data:www-data ./src .</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Install dependencies without dev packages</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> composer install --no-dev --optimize-autoloader --no-scripts</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Production PHP config</span></span>
+<span class="line"><span style="color:#F97583">RUN</span><span style="color:#E1E4E8"> echo </span><span style="color:#9ECBFF">"opcache.enable=1"</span><span style="color:#E1E4E8"> >> /usr/local/etc/php/conf.d/opcache.ini \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x26;&#x26; echo </span><span style="color:#9ECBFF">"opcache.validate_timestamps=0"</span><span style="color:#E1E4E8"> >> /usr/local/etc/php/conf.d/opcache.ini \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x26;&#x26; echo </span><span style="color:#9ECBFF">"opcache.memory_consumption=256"</span><span style="color:#E1E4E8"> >> /usr/local/etc/php/conf.d/opcache.ini \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x26;&#x26; echo </span><span style="color:#9ECBFF">"display_errors=Off"</span><span style="color:#E1E4E8"> >> /usr/local/etc/php/conf.d/production.ini \</span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x26;&#x26; echo </span><span style="color:#9ECBFF">"log_errors=On"</span><span style="color:#E1E4E8"> >> /usr/local/etc/php/conf.d/production.ini</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">USER</span><span style="color:#E1E4E8"> www-data</span></span></code></pre>
+<p>The key differences: <code>opcache.validate_timestamps=0</code> (don’t check file changes), <code>--no-dev</code> composer install, <code>display_errors=Off</code>, and the code is copied into the image instead of mounted.</p>
+<h2 id="common-pitfalls">Common Pitfalls</h2>
+<p>Mistakes I’ve made so you don’t have to:</p>
+<ol>
+<li>
+<p><strong>File permissions</strong> — Containers run as <code>www-data</code> but mounted files are owned by your host user. Use <code>USER www-data</code> in the Dockerfile and fix permissions in the entrypoint.</p>
+</li>
+<li>
+<p><strong>Slow file I/O on macOS</strong> — Docker Desktop’s file sharing is slow. Use <code>:cached</code> or <code>:delegated</code> flags on volume mounts, or use Mutagen for syncing.</p>
+</li>
+<li>
+<p><strong>Database not ready</strong> — PHP starts before MySQL is accepting connections. Always use <code>depends_on</code> with <code>condition: service_healthy</code>.</p>
+</li>
+<li>
+<p><strong>Running Composer as root</strong> — Composer warns against it. Set <code>USER www-data</code> before running Composer commands.</p>
+</li>
+<li>
+<p><strong>Forgetting to persist data</strong> — Without named volumes, <code>docker compose down</code> deletes your database.</p>
+</li>
+</ol>
+<p>This setup has served me across Laravel, Magento, and CS-Cart projects for the past three years. Tweak the PHP extensions and Nginx config for your framework, and you’ll have a solid foundation.</p> </article> </div> </div>  <script type="module">const s=new IntersectionObserver(e=>{e.forEach(r=>{r.isIntersecting&&r.target.classList.add("visible")})},{threshold:.1});document.querySelectorAll(".reveal").forEach(e=>s.observe(e));</script> <script type="module">const c=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let o=[];document.addEventListener("keydown",t=>{window.__snakeActive||(o.push(t.key),o.length>c.length&&o.shift(),o.length===c.length&&o.every((e,i)=>e===c[i])&&(o=[],y()))});function y(){const t=document.createElement("canvas");t.style.cssText="position:fixed;inset:0;z-index:9999;pointer-events:none;",document.body.appendChild(t);const e=t.getContext("2d");t.width=window.innerWidth,t.height=window.innerHeight;const i="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*(){}[]|;:<>?/~",r=14,g=Math.floor(t.width/r),l=new Array(g).fill(0).map(()=>Math.random()*-50);let s=0,f=!1,h=!1;const m=performance.now();function d(){s=(performance.now()-m)/1e3,e.fillStyle="rgba(10, 14, 10, 0.05)",e.fillRect(0,0,t.width,t.height),e.fillStyle="#00ff41",e.font=`${r}px monospace`;for(let n=0;n<l.length;n++){const a=i[Math.floor(Math.random()*i.length)],p=n*r,w=l[n]*r;Math.random()>.95?e.fillStyle="#ffffff":e.fillStyle=`rgba(0, 255, 65, ${.4+Math.random()*.6})`,e.fillText(a,p,w),w>t.height&&Math.random()>.975&&(l[n]=0),l[n]+=.5}if(s>5&&!f&&(f=!0),f){e.save(),e.fillStyle="rgba(10, 14, 10, 0.7)";const n=500,a=60;e.fillRect((t.width-n)/2,(t.height-a)/2,n,a),e.font="bold 24px monospace",e.fillStyle="#00ff41",e.textAlign="center",e.textBaseline="middle",e.shadowColor="#00ff41",e.shadowBlur=20,e.fillText("YOU FOUND THE SECRET",t.width/2,t.height/2),e.restore()}s>10&&!h&&(h=!0,t.style.transition="opacity 3s ease",t.style.opacity="0",setTimeout(()=>t.remove(),3e3)),h||requestAnimationFrame(d)}requestAnimationFrame(d)}</script> </body> </html> <script type="module">document.querySelectorAll(".blog-content pre").forEach(t=>{const r=document.createElement("div");r.className="relative group",t.parentNode?.insertBefore(r,t),r.appendChild(t);const e=document.createElement("button");e.className="absolute top-2 right-2 text-[10px] text-term-text-dim px-2 py-1 rounded border border-term-border bg-term-bg hover:text-term-green hover:border-term-green-dark transition-all opacity-0 group-hover:opacity-100",e.textContent="Copy",r.appendChild(e),e.addEventListener("click",async()=>{const o=t.querySelector("code");await navigator.clipboard.writeText(o?.textContent||""),e.textContent="Copied!",e.classList.add("text-term-green","border-term-green-dark"),setTimeout(()=>{e.textContent="Copy",e.classList.remove("text-term-green","border-term-green-dark")},1500)})});</script>
